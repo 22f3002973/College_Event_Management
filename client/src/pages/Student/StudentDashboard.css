@@ -1,0 +1,182 @@
+.student-dashboard {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+/* Header */
+.dashboard-header h1 {
+  font-size: 2.8rem;
+  color: #111827;
+}
+
+.subtitle {
+  margin-top: 10px;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Stats */
+.dashboard-stats {
+  display: flex;
+  gap: 40px;
+  margin: 50px 0;
+}
+
+.stat-card {
+  flex: 1;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.stat-card h2 {
+  font-size: 3.5rem;
+  color: #ef4444;
+  margin-bottom: 8px;
+}
+
+.stat-card p {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+/* Registered Reminder */
+.registered-reminder {
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  margin-bottom: 60px;
+}
+
+.registered-reminder h2 {
+  font-size: 1.9rem;
+  margin-bottom: 15px;
+}
+
+.reminder-text {
+  font-size: 1.25rem;
+  color: #374151;
+  margin-bottom: 15px;
+}
+
+.motivation-text {
+  font-size: 1.25rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.registered-reminder ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 25px;
+}
+
+.registered-reminder li {
+  margin-bottom: 12px;
+}
+
+.registered-reminder strong {
+  font-size: 1.15rem;
+}
+
+.registered-reminder span {
+  display: block;
+  font-size: 1.05rem;
+  color: #6b7280;
+}
+
+/* Buttons */
+.primary-btn {
+  background-color: #ef4444;
+  color: white;
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background-color: #dc2626;
+}
+
+.secondary-btn {
+  background-color: #ffffff;
+  border: 2px solid #ef4444;
+  color: #ef4444;
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  background-color: #fee2e2;
+}
+
+/* Upcoming Events */
+.upcoming-events {
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.upcoming-events h2 {
+  font-size: 1.9rem;
+  margin-bottom: 20px;
+}
+
+.event-item {
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.event-item:last-child {
+  border-bottom: none;
+}
+
+.event-item strong {
+  font-size: 1.15rem;
+}
+
+.event-item span {
+  display: block;
+  font-size: 1.05rem;
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+.empty-text {
+  font-size: 1.2rem;
+  color: #9ca3af;
+}
+
+.see-more-btn {
+  margin-top: 25px;
+}
+/* Header layouts */
+.reminder-header,
+.upcoming-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.align-right {
+  display: block;
+  margin-left: auto;
+}
+/* See More button alignment */
+.see-more-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 25px;
+}
