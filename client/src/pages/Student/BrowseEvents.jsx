@@ -61,7 +61,7 @@ const BrowseEvents = () => {
         <div className="events-grid">
           {displayedEvents.length > 0 ? (
             displayedEvents.map((event) => (
-              <EventCardStud key={event._id} event={event} />
+              <EventCardStud key={event._id} event={event} type="browse"/>
             ))
           ) : (
             <p className="no-events">No events found</p>
