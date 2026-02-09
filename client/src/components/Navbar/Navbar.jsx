@@ -46,6 +46,15 @@ const [showProfile, setShowProfile] = useState(false);
         >
           Registered Events
         </NavLink>
+
+        <NavLink
+          to="/student/feedback"
+          className={({ isActive }) =>
+            isActive ? "nav-link active" : "nav-link"
+          }
+        >
+          Feedback
+        </NavLink>
         
         <span
   className="nav-link"
