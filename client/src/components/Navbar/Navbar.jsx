@@ -35,6 +35,15 @@ const Navbar = () => {
           Events
         </NavLink>
         <NavLink
+          to="/student/registered"
+          className={({ isActive }) =>
+            isActive ? "nav-link active" : "nav-link"
+          }
+        >
+          Registered Events
+        </NavLink>
+        
+        <NavLink
           to="/student/profile"
           className={({ isActive }) =>
             isActive ? "nav-link active" : "nav-link"
