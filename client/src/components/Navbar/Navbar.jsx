@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./Navbar.css";
+import ProfileDrawer from "../Profile/ProfileDrawer"; 
+
 
 const Navbar = () => {
   const navigate = useNavigate();
+const [showProfile, setShowProfile] = useState(false);
 
   const handleLogout = () => {
     // Add logout functionality here
@@ -11,6 +14,7 @@ const Navbar = () => {
   };
 
   return (
+    <>
     <nav className="navbar">
       <div className="navbar-left">
         <h1 className="project-title">EVenTify</h1>
@@ -43,19 +47,24 @@ const Navbar = () => {
           Registered Events
         </NavLink>
         
-        <NavLink
-          to="/student/profile"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-        >
-          Profile
-        </NavLink>
+        <span
+  className="nav-link"
+  onClick={() => setShowProfile(true)}
+>
+  Profile
+</span>
+
         <button className="logout-btn" onClick={handleLogout}>
           Logout
         </button>
       </div>
+     
     </nav>
+    {showProfile && (
+  <ProfileDrawer onClose={() => setShowProfile(false)} />
+)}
+</>
+    
   );
 };
 
