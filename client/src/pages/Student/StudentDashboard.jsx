@@ -17,10 +17,10 @@ const StudentDashboard = () => {
     ? registrationsData
     : [];
 
-  const loggedInStudentId = "STU0001";
+  const loggedInStudentId = "64a1f001";
 
   const student =
-    users.find((u) => u.userId === loggedInStudentId) || {
+    users.find((u) => u._id === loggedInStudentId) || {
       name: "Student",
     };
 
@@ -31,6 +31,15 @@ const StudentDashboard = () => {
   const studentRegistrations = registrations.filter(
     (r) => r.studentId === loggedInStudentId
   );
+// collect registered event IDs
+const registeredEventIds = studentRegistrations.map(
+  (r) => r.eventId
+);
+
+// approved events NOT registered by the student
+const upcomingEvents = approvedEvents.filter(
+  (event) => !registeredEventIds.includes(event._id)
+);
 
   return (
     <>
@@ -81,7 +90,7 @@ const StudentDashboard = () => {
           ) : (
             <>
               <p className="reminder-text">
-                Make sure you attend the following events:
+                REMINDER!! Make sure you attend the following events:
               </p>
 
               <ul>
@@ -118,14 +127,14 @@ const StudentDashboard = () => {
 <div className="upcoming-events">
   <h2>Upcoming Events</h2>
 
-  {approvedEvents.length === 0 && (
+  {upcomingEvents.length === 0 && (
     <p className="empty-text">
       No upcoming events available.
     </p>
   )}
 
   <ul>
-    {approvedEvents.slice(0, 3).map((event, index) => (
+    {upcomingEvents.slice(0, 3).map((event, index) => (
       <li key={index} className="event-item">
         <strong>{event.title}</strong>
         <span>
