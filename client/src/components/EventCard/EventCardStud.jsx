@@ -19,7 +19,7 @@ const EventCardStud = ({ event, type }) => {
 
         <p className="event-description">{event.description}</p>
 
-        {type !== "browse" && type!=="registered"&&(
+        {type !== "browse" && type!=="registered"&&type!=="feedback"&&(
           <p className="event-created">
             🕒 Created on: {formattedCreatedAt}
           </p>
