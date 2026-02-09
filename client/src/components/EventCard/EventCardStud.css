@@ -48,17 +48,17 @@
 
 
 .primary-btn {
-  background-color: #2563eb;
+  background-color: #ef4444;
   color: #ffffff;
   border: none;
   padding: 12px 26px;
-  font-size: 1.05rem;
+  font-size: 1.09rem;
   border-radius: 10px;
   cursor: pointer;
 }
 
 .primary-btn:hover {
-  background-color: #1d4ed8;
+  background-color: #dc2626;
 }
 
 .registered-badge {
