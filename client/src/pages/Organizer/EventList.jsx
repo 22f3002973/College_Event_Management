@@ -5,7 +5,7 @@ import "./EventList.css";
 
 const EventList = () => {
 
-  const organizerId = "ORG0001";
+  const organizerId = "64a1f002";
 
   const organizerEvents = eventsData.filter(
     event => event.organizerId === organizerId
