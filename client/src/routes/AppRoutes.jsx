@@ -17,6 +17,9 @@ import EventList from "../pages/Organizer/EventList";
 // Admin
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 import EventApproval from "../pages/Admin/EventApproval";
+import AnalyticsDashboard from "../pages/Analytics/AnalyticsDashboard";
+
+
 
 const AppRoutes = () => {
   return (
@@ -35,6 +38,7 @@ const AppRoutes = () => {
 
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/event-approval" element={<EventApproval />} />
+      <Route path="/admin/analytics" element={<AnalyticsDashboard />} />
     </Routes>
   );
 };

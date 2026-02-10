@@ -1,14 +1,14 @@
 [
   {
-    "_id": "70b2r001",
-    "studentId": "64a1f001",
-    "eventId": "65e1a101",
+    "_id": "R1",
+    "studentId": "STU0001",
+    "eventId": "E1",
     "registrationDate": "2026-02-05"
   },
   {
-    "_id": "70b2r002",
-    "studentId": "64a1f001",
-    "eventId": "65e1a102",
-    "registrationDate": "2026-02-07"
+    "_id": "R2",
+    "studentId": "STU0001",
+    "eventId": "E2",
+    "registrationDate": "2026-02-06"
   }
 ]
