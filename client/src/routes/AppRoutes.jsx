@@ -20,6 +20,8 @@ import StudentFeedback from "../pages/Student/StudentFeedback";
 import OrganizerDashboard from "../pages/Organizer/OrganizerDashboard";
 import CreateEvent from "../pages/Organizer/CreateEvent";
 import EventList from "../pages/Organizer/EventList";
+import EditEvent from "../pages/Organizer/EditEvent";
+
 
 // Admin
 import AdminDashboard from "../pages/Admin/AdminDashboard";
@@ -42,6 +44,8 @@ const AppRoutes = () => {
       <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
       <Route path="/organizer/create-event" element={<CreateEvent />} />
       <Route path="/organizer/events" element={<EventList />} />
+      <Route path="/organizer/edit-event" element={<EditEvent />} />
+
 
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/event-approval" element={<EventApproval />} />
