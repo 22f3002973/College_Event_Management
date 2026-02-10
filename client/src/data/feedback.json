@@ -1,0 +1,42 @@
+[
+  {
+    "_id": "F1",
+    "eventId": "E1",
+    "studentId": "STU0001",
+    "rating": 5,
+    "comment": "Excellent event!",
+    "submittedAt": "2026-02-12"
+  },
+  {
+    "_id": "F2",
+    "eventId": "E1",
+    "studentId": "STU0002",
+    "rating": 4,
+    "comment": "Very well organized.",
+    "submittedAt": "2026-02-12"
+  },
+  {
+    "_id": "F3",
+    "eventId": "E2",
+    "studentId": "STU0003",
+    "rating": 3,
+    "comment": "Good but could improve.",
+    "submittedAt": "2026-02-13"
+  },
+  {
+    "_id": "F4",
+    "eventId": "E2",
+    "studentId": "STU0004",
+    "rating": 4,
+    "comment": "Nice experience overall.",
+    "submittedAt": "2026-02-13"
+  },
+  {
+    "_id": "F5",
+    "eventId": "E3",
+    "studentId": "STU0005",
+    "rating": 2,
+    "comment": "Needs better management.",
+    "submittedAt": "2026-02-14"
+  }
+]
