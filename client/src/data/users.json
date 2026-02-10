@@ -4,7 +4,7 @@
     "userId": "STU0001",
     "name": "Anish Roy",
     "email": "anish@gmail.com",
-    "password": "hashed_password",
+    "password": "1234",
     "role": "student",
     "department": "MCA"
   },
@@ -13,7 +13,7 @@
     "userId": "ORG0001",
     "name": "Rahul Verma",
     "email": "rahul@gmail.com",
-    "password": "hashed_password",
+    "password": "1234",
     "role": "organizer",
     "department": "CSE"
   },
@@ -22,7 +22,7 @@
     "userId": "ADM0001",
     "name": "Admin User",
     "email": "admin@gmail.com",
-    "password": "hashed_password",
+    "password": "admin",
     "role": "admin",
     "department": "Administration"
   }
