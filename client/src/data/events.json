@@ -1,0 +1,35 @@
+[
+  {
+    "_id": "EVT001",
+    "title": "Tech Fest",
+    "description": "Annual technical event",
+    "date": "2026-02-10",
+    "venue": "Auditorium",
+    "status": "approved",
+    "organizerId": "ORG0001", 
+    "createdAt": "2026-02-01T10:30:00"
+
+  },
+  {
+    "_id": "EVT002",
+    "title": "Music Night",
+    "description": "College cultural music event",
+    "date": "2026-02-15",
+    "venue": "Open Ground",
+    "status": "pending",
+    "organizerId": "ORG0001",
+    "createdAt": "2026-02-01T10:30:00"
+  },
+  {
+    "_id": "EVT003",
+    "title": "Coding Contest",
+    "description": "Competitive programming contest",
+    "date": "2026-03-01",
+    "venue": "Lab 5",
+    "status": "rejected",
+    "organizerId": "ORG0001",
+    "createdAt": "2026-02-01T10:30:00"
+  }
+]
+
+

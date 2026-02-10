@@ -1,0 +1,70 @@
+/* Page Wrapper */
+.create-container {
+  padding: 40px;
+}
+
+
+/* Heading */
+.create-container h1 {
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 35px;
+  color: #1e293b;
+}
+
+/* Form Card */
+.create-form {
+  background: white;
+  padding: 35px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Inputs */
+.create-form input,
+.create-form textarea {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+  transition: 0.2s ease;
+  outline: none;
+}
+
+/* Input Focus */
+.create-form input:focus,
+.create-form textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Textarea */
+.create-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Submit Button */
+.create-form button {
+  background: #2563eb;
+  color: white;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: 0.25s ease;
+}
+
+/* Hover */
+.create-form button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
