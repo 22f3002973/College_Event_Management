@@ -46,6 +46,16 @@ const Navbar = () => {
           Create Event
         </NavLink>
 
+        
+        <NavLink
+          to="/organizer/feedback"
+          className={({ isActive }) =>
+            isActive ? "nav-link active" : "nav-link"
+          }
+        >
+          Feedback
+        </NavLink>
+
         <button className="logout-btn" onClick={handleLogout}>
           Logout
         </button>

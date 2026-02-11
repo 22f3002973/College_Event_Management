@@ -1,0 +1,42 @@
+[
+  {
+    "feedbackId": "FDB001",
+    "eventId": "EVT001",
+    "studentId": "STU101",
+    "rating": 5,
+    "comment": "Amazing technical sessions and workshops!",
+    "submittedAt": "2026-02-11T14:20:00"
+  },
+  {
+    "feedbackId": "FDB002",
+    "eventId": "EVT001",
+    "studentId": "STU102",
+    "rating": 4,
+    "comment": "Very informative event, well organized.",
+    "submittedAt": "2026-02-11T15:10:00"
+  },
+  {
+    "feedbackId": "FDB003",
+    "eventId": "EVT002",
+    "studentId": "STU103",
+    "rating": 3,
+    "comment": "Music was good but sound system could be better.",
+    "submittedAt": "2026-02-16T19:45:00"
+  },
+  {
+    "feedbackId": "FDB004",
+    "eventId": "EVT002",
+    "studentId": "STU104",
+    "rating": 4,
+    "comment": "Loved the performances and stage setup.",
+    "submittedAt": "2026-02-16T20:05:00"
+  },
+  {
+    "feedbackId": "FDB005",
+    "eventId": "EVT003",
+    "studentId": "STU105",
+    "rating": 2,
+    "comment": "Contest was challenging but system lag affected performance.",
+    "submittedAt": "2026-03-01T17:30:00"
+  }
+]

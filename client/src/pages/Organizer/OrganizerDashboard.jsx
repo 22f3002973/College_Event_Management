@@ -26,7 +26,7 @@ const OrganizerDashboard = () => {
         {/* Header */}
         <div className="dashboard-header">
           <div>
-            <h1>Organizer Dashboard</h1>
+            <h1>Hello Anushka!</h1>
             <p>Manage and track all your events</p>
           </div>
 

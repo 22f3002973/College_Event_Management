@@ -13,6 +13,9 @@ import OrganizerDashboard from "../pages/Organizer/OrganizerDashboard";
 import CreateEvent from "../pages/Organizer/CreateEvent";
 import EventList from "../pages/Organizer/EventList";
 import EditEvent from "../pages/Organizer/EditEvent";
+import FeedbackEvents from "../pages/Organizer/FeedbackEvents";                
+import EventFeedbackDetails from "../pages/Organizer/EventFeedbackDetails";
+
 
 
 // Admin
@@ -34,6 +37,9 @@ const AppRoutes = () => {
       <Route path="/organizer/events" element={<EventList />} />
       <Route path="/organizer/edit-event" element={<EditEvent />} />
 
+      
+      <Route path="/organizer/feedback" element={<FeedbackEvents />} />
+      <Route path="/organizer/feedback/:eventId" element={<EventFeedbackDetails />} />
 
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/event-approval" element={<EventApproval />} />
