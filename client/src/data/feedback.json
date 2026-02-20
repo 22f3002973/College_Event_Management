@@ -1,5 +1,6 @@
 [
   {
+<<<<<<< HEAD
     "feedbackId": "FDB001",
     "eventId": "EVT001",
     "studentId": "STU101",
@@ -38,5 +39,12 @@
     "rating": 2,
     "comment": "Contest was challenging but system lag affected performance.",
     "submittedAt": "2026-03-01T17:30:00"
+=======
+    "id": "f001",
+    "eventId": "65e1a101",
+    "studentId": "64a1f001",
+    "rating": 4,
+    "comment": "Good event"
+>>>>>>> 6416dfb8762884141fdb1747bc5771002b2b1c77
   }
 ]
