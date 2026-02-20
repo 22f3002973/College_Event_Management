@@ -78,7 +78,7 @@ const EventCardStud = ({ event, type }) => {
       {/* TOAST (SCREEN LEVEL) */}
       {showToast && (
         <div className="toast">
-          🎉 You’re registered for {event.title}
+           You’re registered for {event.title}
         </div>
       )}
     </>
