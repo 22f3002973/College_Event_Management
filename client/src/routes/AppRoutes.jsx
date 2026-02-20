@@ -22,7 +22,7 @@ import CreateEvent from "../pages/Organizer/CreateEvent";
 import EventList from "../pages/Organizer/EventList";
 import EditEvent from "../pages/Organizer/EditEvent";
 
-// ❌ Removed Organizer Feedback imports
+//  Removed Organizer Feedback imports
 // import FeedbackEvents from "../pages/Organizer/FeedbackEvents";                
 // import EventFeedbackDetails from "../pages/Organizer/EventFeedbackDetails";
 
@@ -49,7 +49,7 @@ const AppRoutes = () => {
       <Route path="/organizer/events" element={<EventList />} />
       <Route path="/organizer/edit-event" element={<EditEvent />} />
 
-      {/* ❌ Removed Organizer Feedback routes */}
+      {/* Removed Organizer Feedback routes */}
       {/* <Route path="/organizer/feedback" element={<FeedbackEvents />} /> */}
       {/* <Route path="/organizer/feedback/:eventId" element={<EventFeedbackDetails />} /> */}
 
