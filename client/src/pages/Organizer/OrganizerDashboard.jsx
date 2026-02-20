@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const OrganizerDashboard = () => {
 
   const navigate = useNavigate();
-  const organizerId = "ORG0001";
+  const organizerId = "64a1f002";
 
   const organizerEvents = eventsData.filter(
     event => event.organizerId === organizerId
@@ -17,6 +17,7 @@ const OrganizerDashboard = () => {
   const approved = organizerEvents.filter(e => e.status === "approved").length;
   const pending = organizerEvents.filter(e => e.status === "pending").length;
   const rejected = organizerEvents.filter(e => e.status === "rejected").length;
+  const upcoming = organizerEvents.filter(e => e.status === "upcoming").length;
 
   return (
     <OrganizerLayout>
@@ -44,6 +45,7 @@ const OrganizerDashboard = () => {
           <StatsCard title="Approved" count={approved} />
           <StatsCard title="Pending" count={pending} />
           <StatsCard title="Rejected" count={rejected} />
+          <StatsCard title="Upcoming" count={upcoming} />
         </div>
 
         {/* Events List */}
