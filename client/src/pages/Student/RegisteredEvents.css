@@ -1,0 +1,51 @@
+.registered-events-page {
+  padding: 40px 60px;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* Header */
+.registered-header {
+  margin-bottom: 40px;
+}
+
+.registered-header h1 {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+.registered-header p {
+  font-size: 17px;
+  color: #555;
+}
+
+/* Sections */
+.registered-section {
+  margin-bottom: 60px;
+}
+
+.registered-section h2 {
+  font-size: 26px;
+  margin-bottom: 24px;
+}
+
+/* Upcoming list: ONE CARD PER ROW */
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* History grid: 5 cards per row */
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+}
+
+/* Empty state */
+.empty-text {
+  font-size: 17px;
+  color: #777;
+  margin-top: 10px;
+}
