@@ -1,0 +1,42 @@
+[
+  {
+    "_id": "65e1a101",
+    "title": "Tech Fest 2026",
+    "description": "Annual technical event",
+    "date": "2026-02-10",
+    "venue": "Auditorium",
+    "status": "approved",
+    "organizerId": "64a1f002",
+    "createdAt": "2026-02-01T10:30:00"
+  },
+  {
+    "_id": "65e1a102",
+    "title": "Cultural Night",
+    "description": "Dance and music performances",
+    "date": "2026-02-15",
+    "venue": "Open Ground",
+    "status": "approved",
+    "organizerId": "64a1f002",
+    "createdAt": "2026-02-01T10:30:00"
+  },
+  {
+    "_id": "65e1a103",
+    "title": "Hackathon 2026",
+    "description": "24-hour coding competition for all branches",
+    "date": "2026-02-20",
+    "venue": "Main Auditorium",
+    "status": "upcoming",
+    "organizerId": "64a1f002",
+    "createdAt": "2026-02-01T10:30:00"
+  },
+  {
+    "_id": "65e1a104",
+    "title": "Cultural Fest",
+    "description": "Annual cultural celebration",
+    "date": "2026-03-05",
+    "venue": "Open Ground",
+    "status": "upcoming",
+    "organizerId": "64a1f002",
+    "createdAt": "2026-02-03T14:15:00"
+  }
+]

@@ -1,0 +1,26 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.page-header h2 {
+  font-size: 32px;
+  color: var(--text-dark);
+}
+
+.page-header p {
+  color: #6b7280;
+}
+
+.header-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: var(--shadow);
+}

@@ -1,0 +1,29 @@
+[
+  {
+    "_id": "64a1f001",
+    "userId": "STU0001",
+    "name": "Anish Roy",
+    "email": "anish@gmail.com",
+    "password": "1234",
+    "role": "student",
+    "department": "MCA"
+  },
+  {
+    "_id": "64a1f002",
+    "userId": "ORG0001",
+    "name": "Rahul Verma",
+    "email": "rahul@gmail.com",
+    "password": "1234",
+    "role": "organizer",
+    "department": "CSE"
+  },
+  {
+    "_id": "64a1f003",
+    "userId": "ADM0001",
+    "name": "Admin User",
+    "email": "admin@gmail.com",
+    "password": "admin",
+    "role": "admin",
+    "department": "Administration"
+  }
+]
