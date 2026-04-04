@@ -1,15 +1,29 @@
 import React, { useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import EventCardStud from "../../components/EventCard/EventCardStud";
-import eventsData from "../../data/events.json";
 import "./BrowseEvents.css";
+import axios from "axios";
+import { useEffect } from "react";
 
 const BrowseEvents = () => {
   const [sortType, setSortType] = useState("upcoming");
+  const [events, setEvents] = useState([]); 
+  useEffect(() => {
+  const fetchEvents = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/events/approved");
+      setEvents(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchEvents();
+}, []);
 
   const today = new Date();
 
-  const sortedEvents = [...eventsData].sort((a, b) => {
+  const sortedEvents = [...events].sort((a, b) => {
     if (sortType === "upcoming") {
       return new Date(a.date) - new Date(b.date);
     }
@@ -29,9 +43,11 @@ const BrowseEvents = () => {
     return 0;
   });
 
-  const displayedEvents =
-    sortType === "upcoming"
-      ? sortedEvents.filter((e) => new Date(e.date) >= today)
+  const todayDate = new Date().toISOString().split("T")[0];
+
+const displayedEvents =
+  sortType === "upcoming"
+    ? sortedEvents.filter((e) => e.date >= todayDate)
       : sortType === "past"
       ? sortedEvents.filter((e) => new Date(e.date) < today)
       : sortedEvents;

@@ -1,12 +1,56 @@
 import "./EventCardStud.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-const EventCardStud = ({ event, type }) => {
+const EventCardStud = ({ event, type, userId }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [currentCapacity, setCurrentCapacity] = useState(event.capacity || 0);
 
   const formattedCreatedAt = new Date(event.createdAt).toLocaleDateString();
+
+  // On load, check if user already registered (for registered events page)
+ useEffect(() => {
+  // Ensure all IDs are strings for comparison
+  const registeredUsers = (event.registeredUsers || []).map(String);
+  if (registeredUsers.includes(userId?.toString())) {
+    setIsRegistered(true);
+  }
+
+  // Set capacity from backend
+  if (event.capacity !== undefined) setCurrentCapacity(event.capacity);
+}, [event, userId]);
+
+  // Function to handle registration API call
+  const handleConfirmRegistration = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/register/register", {
+        userId,
+        eventId: event._id,
+      });
+
+      if (response.data.success) {
+        setIsRegistered(true);
+        setCurrentCapacity((prev) => (prev > 0 ? prev - 1 : 0));
+        setToastMessage("🎉 You’re registered for " + event.title);
+        setShowToast(true);
+      } else {
+        setToastMessage(response.data.message || "Registration failed");
+        setShowToast(true);
+      }
+    } catch (error) {
+      console.error(error);
+      setToastMessage(
+        error.response?.data?.message || "Network error. Try again later."
+      );
+      setShowToast(true);
+    } finally {
+      setShowConfirm(false);
+      setTimeout(() => setShowToast(false), 2500);
+    }
+  };
 
   return (
     <>
@@ -19,33 +63,27 @@ const EventCardStud = ({ event, type }) => {
 
         <p className="event-description">{event.description}</p>
 
-        {type !== "browse" && type!=="registered"&&type!=="feedback"&&(
-          <p className="event-created">
-            🕒 Created on: {formattedCreatedAt}
-          </p>
+        {type !== "browse" && type !== "registered" && type !== "feedback" && (
+          <p className="event-created">🕒 Created on: {formattedCreatedAt}</p>
         )}
+
+        {/* Display real-time capacity */}
+        <p className="event-capacity">Capacity left: {currentCapacity}</p>
 
         <div className="event-actions">
           {type === "browse" && !isRegistered && (
-            <button
-              className="primary-btn"
-              onClick={() => setShowConfirm(true)}
-            >
+            <button className="primary-btn" onClick={() => setShowConfirm(true)}>
               Register
             </button>
           )}
 
-          {type === "browse" && isRegistered && (
+          {((type === "browse" && isRegistered) || type === "registered") && (
             <span className="registered-badge">✅ Registered</span>
-          )}
-
-          {type === "registered" && (
-            <span className="registered-badge">Registered</span>
           )}
         </div>
       </div>
 
-      {/* CONFIRMATION MODAL (SCREEN LEVEL) */}
+      {/* CONFIRMATION MODAL */}
       {showConfirm && (
         <div className="modal-overlay">
           <div className="modal-box">
@@ -55,32 +93,15 @@ const EventCardStud = ({ event, type }) => {
             </p>
 
             <div className="modal-actions">
-              <button onClick={() => setShowConfirm(false)}>
-                Cancel
-              </button>
-
-              <button
-                onClick={() => {
-                  setIsRegistered(true);
-                  setShowConfirm(false);
-                  setShowToast(true);
-
-                  setTimeout(() => setShowToast(false), 2500);
-                }}
-              >
-                Confirm
-              </button>
+              <button onClick={() => setShowConfirm(false)}>Cancel</button>
+              <button onClick={handleConfirmRegistration}>Confirm</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* TOAST (SCREEN LEVEL) */}
-      {showToast && (
-        <div className="toast">
-          🎉 You’re registered for {event.title}
-        </div>
-      )}
+      {/* TOAST */}
+      {showToast && <div className="toast">{toastMessage}</div>}
     </>
   );
 };
