@@ -1,0 +1,38 @@
+### Create Event
+POST http://localhost:5000/events/create
+Content-Type: application/json
+
+{
+  "title": "Tech Fest",
+  "description": "Coding competition",
+  "venue": "Auditorium",
+  "capacity": 100,
+  "fee": 50,
+  "date": "2026-04-10",
+  "time": "10:00 AM",
+  "type": "Technical",
+  "prizes": "Cash Prize",
+  "organizerId": "64a1f002"
+}
+
+### Get Organizer Events
+GET http://localhost:5000/events/organizer/64a1f002
+
+### Update Event
+PUT http://localhost:5000/events/69d21979584346f80a9165d4
+Content-Type: application/json
+
+{
+  "title": "Tech Fest UPDATED",
+  "description": "Updated description",
+  "venue": "Main Hall"
+}
+
+### Delete Event
+DELETE http://localhost:5000/events/69d21979584346f80a9165d4
+
+### Approve Event
+PUT http://localhost:5000/events/approve/69d236a7f99d558832e69086
+
+### Reject Event
+PUT http://localhost:5000/events/reject/69d239f3f99d558832e69087

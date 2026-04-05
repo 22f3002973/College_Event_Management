@@ -1,31 +1,50 @@
-import staticEvents from "../../data/events.json";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import StatsCard from "../../components/StatsCard/StatsCard";
 import EventCard from "../../components/EventCard/EventCard";
 import OrganizerLayout from "../../components/Layout/OrganizerLayout";
 import "./OrganizerDashboard.css";
-import { useNavigate } from "react-router-dom";
 
 const OrganizerDashboard = () => {
 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // ✅ Must match organizerId in events.json
   const organizerId = "64a1f002";
 
-  // ✅ Get newly created events from localStorage
-  const storedEvents =
-    JSON.parse(localStorage.getItem("events")) || [];
+  const [organizerEvents, setOrganizerEvents] = useState([]);
 
-  // ✅ Combine static + created events
-  const eventsData = [...staticEvents, ...storedEvents];
+  // 🔥 DELETE HANDLER (ADDED)
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/events/${id}`);
 
-  // ✅ Filter events for this organizer
-  const organizerEvents = eventsData.filter(
-    event => event.organizerId === organizerId
-  );
+      // remove from UI instantly
+      setOrganizerEvents(prev =>
+        prev.filter(event => event._id !== id)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  // ✅ Stats
+  const fetchEvents = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/events/organizer/${organizerId}`
+      );
+      setOrganizerEvents(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, [location]);
+
   const approved = organizerEvents.filter(
     e => e.status === "approved"
   ).length;
@@ -42,7 +61,6 @@ const OrganizerDashboard = () => {
     <OrganizerLayout>
       <div className="dashboard-container">
 
-        {/* Header */}
         <div className="dashboard-header">
           <div>
             <h1>Organizer Dashboard</h1>
@@ -57,7 +75,6 @@ const OrganizerDashboard = () => {
           </button>
         </div>
 
-        {/* Stats */}
         <div className="stats-section">
           <StatsCard title="Total Events" count={organizerEvents.length} />
           <StatsCard title="Approved" count={approved} />
@@ -65,7 +82,6 @@ const OrganizerDashboard = () => {
           <StatsCard title="Rejected" count={rejected} />
         </div>
 
-        {/* Events List */}
         <h2 className="events-heading">Your Events</h2>
 
         <div className="events-grid">
@@ -73,7 +89,11 @@ const OrganizerDashboard = () => {
             <p>No events created yet.</p>
           ) : (
             organizerEvents.map(event => (
-              <EventCard key={event._id} event={event} />
+              <EventCard 
+                key={event._id} 
+                event={event}
+                onDelete={handleDelete}   // 🔥 ADDED
+              />
             ))
           )}
         </div>
