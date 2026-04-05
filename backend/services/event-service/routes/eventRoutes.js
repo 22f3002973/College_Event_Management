@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Event = require("../models/Event");
+const mongoose = require("mongoose");
 
 // CREATE EVENT (Organizer)
 router.post("/create", async (req, res) => {
@@ -32,8 +33,19 @@ router.put("/approve/:id", async (req, res) => {
 
 // GET SINGLE EVENT
 router.get("/:id", async (req, res) => {
-  const event = await Event.findById(req.params.id);
-  res.json(event);
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid event ID" });
+    }
+
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    res.json(event);
+  } catch (err) {
+    console.error("Error fetching event:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 // Add a user to registeredUsers array as string

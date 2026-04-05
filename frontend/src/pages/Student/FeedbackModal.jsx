@@ -1,18 +1,50 @@
 import { useState } from "react";
 import "./StudentFeedback.css";
+import axios from "axios";
 
-const FeedbackModal = ({ event, onClose, onSubmit }) => {
+const FeedbackModal = ({ event, onClose, onSubmit, userId  }) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = () => {
-    onSubmit({
-      eventId: event._id,
-      eventTitle: event.title,
-      rating,
-      comment,
-      date: new Date().toISOString(),
-    });
+  const handleSubmit = async () => {
+    if (!userId) {
+      setError("⚠️ User not logged in.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await axios.post("http://localhost:5003/register/feedback", {
+        userId,
+        eventId: event._id,
+        rating,
+        comment,
+      });
+
+      if (res.data.success) {
+        // Call parent to update local feedback history
+        onSubmit({
+          _id: res.data.feedback._id,
+          event: { _id: event._id, title: event.title },
+          rating,
+          comment,
+          createdAt: res.data.feedback.createdAt,
+        });
+
+        onClose(); // Close modal
+      } else {
+        setError(res.data.message || "Failed to submit feedback");
+      }
+    } catch (err) {
+      console.error("Feedback submit error:", err.response?.data || err.message);
+      setError("Server error. Try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,9 +72,13 @@ const FeedbackModal = ({ event, onClose, onSubmit }) => {
           onChange={(e) => setComment(e.target.value)}
         />
 
+          {error && <p style={{ color: "red" }}>{error}</p>}
+
         <div className="modal-actions">
           <button onClick={onClose}>Cancel</button>
-          <button onClick={handleSubmit}>Submit</button>
+          <button onClick={handleSubmit} disabled={loading}>
+            {loading ? "Submitting..." : "Submit"}
+          </button>
         </div>
       </div>
     </div>
