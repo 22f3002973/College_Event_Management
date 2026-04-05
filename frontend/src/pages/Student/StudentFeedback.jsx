@@ -9,7 +9,7 @@ import axios from "axios";
 
 const StudentFeedback = () => {
   const userId = localStorage.getItem("userId");
-  console.log(userId)
+  
   const [attendedEvents, setAttendedEvents] = useState([]);
   const [feedbackHistory, setFeedbackHistory] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
