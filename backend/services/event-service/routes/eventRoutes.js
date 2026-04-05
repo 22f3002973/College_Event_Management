@@ -87,4 +87,24 @@ router.put("/reduce/:id", async (req, res) => {
   res.json(event);
 });
 
+// INCREASE CAPACITY (Rollback Support)
+router.put("/increase/:id", async (req, res) => {
+  try {
+    const event = await Event.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { capacity: 1 } },
+      { new: true }
+    );
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.json(event);
+  } catch (err) {
+    console.error("Error increasing capacity:", err);
+    res.status(500).json({ message: "Failed to increase capacity" });
+  }
+});
+
 module.exports = router;

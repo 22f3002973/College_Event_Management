@@ -10,31 +10,54 @@ router.post("/register", async (req, res) => {
   try {
     const { userId, eventId } = req.body;
 
-    // CALL EVENT SERVICE TO REDUCE CAPACITY first
-    const response = await axios.put(`http://localhost:5002/events/reduce/${eventId}`);
-
-    if (response.data.message === "Full") {
-      return res.json({ success: false, message: "Event is full" });
-    }
-
-    // prevent duplicate AFTER capacity check
+    // STEP 1: Check duplicate
     const existing = await Registration.findOne({ userId, eventId });
     if (existing) {
       return res.json({ success: false, message: "Already registered" });
     }
 
-    // create registration
-    await Registration.create({ userId, eventId });
+    // STEP 2: Reduce capacity
+    const response = await axios.put(
+      `http://localhost:5002/events/reduce/${eventId}`
+    );
 
-    // ✅ Update Event document to add user to registeredUsers
-    await axios.put(`http://localhost:5002/events/addRegisteredUser/${eventId}`, {
-      userId,
-    });
-    
-    return res.json({ success: true, message: "Registered successfully" });
+    if (response.data.message === "Full") {
+      return res.json({ success: false, message: "Event is full" });
+    }
+
+    try {
+      // STEP 3: Create registration
+     
+      await Registration.create({ userId, eventId });
+
+      // STEP 4: Add user to event
+      await axios.put(
+        `http://localhost:5002/events/addRegisteredUser/${eventId}`,
+        { userId }
+      );
+
+      return res.json({ success: true, message: "Registered successfully" });
+
+    } catch (innerErr) {
+      // 🔥 ROLLBACK: Restore capacity
+      await axios.put(
+        `http://localhost:5002/events/increase/${eventId}`
+      );
+
+      console.error("Rollback triggered:", innerErr);
+
+      return res.status(500).json({
+        success: false,
+        message: "Registration failed. Please try again.",
+      });
+    }
+
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ success: false, message: "Server error. Try again later." });
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Try again later.",
+    });
   }
 });
 
