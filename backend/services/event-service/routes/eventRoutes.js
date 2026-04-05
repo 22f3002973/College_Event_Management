@@ -2,17 +2,53 @@ const express = require("express");
 const router = express.Router();
 const Event = require("../models/Event");
 const mongoose = require("mongoose");
-
+const redisClient = require("../../../shared/config/redis");
 // CREATE EVENT (Organizer)
 router.post("/create", async (req, res) => {
-  const event = await Event.create(req.body);
-  res.json(event);
+  try {
+    const event = await Event.create(req.body);
+
+    //  Invalidate cache
+    await redisClient.del("approved_events");
+
+    res.json(event);
+  } catch (err) {
+    res.status(500).json({ message: "Error creating event" });
+  }
 });
 
 // APPROVED EVENTS (Student)
+
 router.get("/approved", async (req, res) => {
-  const events = await Event.find({ status: "approved" }, "title date venue description capacity createdAt registeredUsers");
-  res.json(events);
+  try {
+    // ✅ STEP 1: Check cache
+    const cachedData = await redisClient.get("approved_events");
+
+    if (cachedData) {
+      console.log("Serving from Redis Cache ⚡");
+      return res.json(JSON.parse(cachedData));
+    }
+
+    // ✅ STEP 2: Fetch from DB
+    const events = await Event.find(
+      { status: "approved" },
+      "title date venue description capacity createdAt registeredUsers"
+    );
+
+    // ✅ STEP 3: Store in Redis (with expiry)
+    await redisClient.setEx(
+      "approved_events",
+      60, // seconds
+      JSON.stringify(events)
+    );
+
+    console.log("Serving from DB & caching result 🗄️");
+
+    res.json(events);
+  } catch (err) {
+    console.error("Error fetching approved events:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 // PENDING EVENTS (Admin)
@@ -23,12 +59,20 @@ router.get("/pending", async (req, res) => {
 
 // APPROVE EVENT (Admin)
 router.put("/approve/:id", async (req, res) => {
-  const event = await Event.findByIdAndUpdate(
-    req.params.id,
-    { status: "approved" },
-    { new: true }
-  );
-  res.json(event);
+  try {
+    const event = await Event.findByIdAndUpdate(
+      req.params.id,
+      { status: "approved" },
+      { new: true }
+    );
+
+    //  Invalidate cache
+    await redisClient.del("approved_events");
+
+    res.json(event);
+  } catch (err) {
+    res.status(500).json({ message: "Error approving event" });
+  }
 });
 
 // GET SINGLE EVENT
