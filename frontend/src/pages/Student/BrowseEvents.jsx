@@ -4,8 +4,10 @@ import EventCardStud from "../../components/EventCard/EventCardStud";
 import "./BrowseEvents.css";
 import axios from "axios";
 import { useEffect } from "react";
+import SearchBar from "../../components/SearchBar/SearchBar";
 
 const BrowseEvents = () => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [sortType, setSortType] = useState("upcoming");
   const [events, setEvents] = useState([]); 
   useEffect(() => {
@@ -46,11 +48,14 @@ const BrowseEvents = () => {
   const todayDate = new Date().toISOString().split("T")[0];
 
 const displayedEvents =
-  sortType === "upcoming"
+  (sortType === "upcoming"
     ? sortedEvents.filter((e) => e.date >= todayDate)
-      : sortType === "past"
-      ? sortedEvents.filter((e) => new Date(e.date) < today)
-      : sortedEvents;
+    : sortType === "past"
+    ? sortedEvents.filter((e) => new Date(e.date) < today)
+    : sortedEvents
+  ).filter((event) =>
+    event.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <>
@@ -63,6 +68,11 @@ const displayedEvents =
             <p>Explore and register for college events</p>
           </div>
 
+          <div className="browse-controls">
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+              />
           <select
             value={sortType}
             onChange={(e) => setSortType(e.target.value)}
@@ -72,6 +82,7 @@ const displayedEvents =
             <option value="newest">Newest Added</option>
             <option value="oldest">Oldest Added</option>
           </select>
+           </div>
         </div>
 
         <div className="events-grid">
