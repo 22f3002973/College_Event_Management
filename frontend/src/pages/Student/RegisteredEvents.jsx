@@ -1,25 +1,35 @@
 import Navbar from "../../components/Navbar/Navbar";
 import EventCardStud from "../../components/EventCard/EventCardStud";
-
-import eventsData from "../../data/events.json";
-import registrationsData from "../../data/registrations.json";
-
+import axios from "axios";
 import "./RegisteredEvents.css";
+import { useState, useEffect } from "react";
 
 const RegisteredEvents = () => {
-  // IMPORTANT: use _id, not userId
-  const loggedInStudentId = "64a1f001";
+  const [registeredEvents, setRegisteredEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Get logged-in student ID from localStorage
+  const studentId = localStorage.getItem("userId");
   const today = new Date();
+  useEffect(() => {
+    const fetchRegisteredEvents = async () => {
+      try {
+        // Call Registration API
+        const res = await axios.get(`http://localhost:5000/register/${studentId}`);
+        // res.data is an array of { _id, userId, event }
+        const events = res.data.map((r) => r.event);
+        setRegisteredEvents(events);
+      } catch (err) {
+        console.error("Failed to fetch registered events:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // get registrations of this student
-  const studentRegistrations = registrationsData.filter(
-    (r) => r.studentId === loggedInStudentId
-  );
+    if (studentId) fetchRegisteredEvents();
+  }, [studentId]);
 
-  // map registrations -> full event objects
-  const registeredEvents = studentRegistrations
-    .map((reg) => eventsData.find((e) => e._id === reg.eventId))
-    .filter(Boolean);
+  
 
   // split upcoming vs past
   const upcomingEvents = registeredEvents.filter(
@@ -30,6 +40,8 @@ const RegisteredEvents = () => {
     (e) => new Date(e.date) < today
   );
 
+  if (loading) return <p>Loading your events...</p>;
+  
   return (
     <>
       <Navbar />
@@ -51,10 +63,11 @@ const RegisteredEvents = () => {
           {upcomingEvents.length > 0 ? (
             <div className="upcoming-list">
               {upcomingEvents.map((event) => (
-                <EventCardStud
+               <EventCardStud
                   key={event._id}
                   event={event}
                   type="registered"
+                  userId={studentId}
                 />
               ))}
             </div>
@@ -76,6 +89,7 @@ const RegisteredEvents = () => {
                   key={event._id}
                   event={event}
                   type="registered"
+                  userId={studentId}
                 />
               ))}
             </div>

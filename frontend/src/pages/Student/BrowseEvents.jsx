@@ -77,7 +77,8 @@ const displayedEvents =
         <div className="events-grid">
           {displayedEvents.length > 0 ? (
             displayedEvents.map((event) => (
-              <EventCardStud key={event._id} event={event} type="browse"/>
+             <EventCardStud key={event._id} event={event}type="browse" userId={localStorage.getItem("userId")}
+              />
             ))
           ) : (
             <p className="no-events">No events found</p>

@@ -25,6 +25,13 @@ const EventCardStud = ({ event, type, userId }) => {
 
   // Function to handle registration API call
   const handleConfirmRegistration = async () => {
+    if (!userId) {
+    setToastMessage("⚠️ Missing user ID. Cannot register!");
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2500);
+    setShowConfirm(false);
+    return;
+  }
     try {
       const response = await axios.post("http://localhost:5000/register/register", {
         userId,
@@ -72,9 +79,20 @@ const EventCardStud = ({ event, type, userId }) => {
 
         <div className="event-actions">
           {type === "browse" && !isRegistered && (
-            <button className="primary-btn" onClick={() => setShowConfirm(true)}>
-              Register
-            </button>
+           <button
+    className="primary-btn"
+    onClick={() => {
+      if (!userId) {
+        setToastMessage("⚠️ You must be logged in to register!");
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2500);
+        return;
+      }
+      setShowConfirm(true);
+    }}
+  >
+    Register
+  </button>
           )}
 
           {((type === "browse" && isRegistered) || type === "registered") && (

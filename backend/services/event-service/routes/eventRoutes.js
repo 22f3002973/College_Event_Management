@@ -10,7 +10,7 @@ router.post("/create", async (req, res) => {
 
 // APPROVED EVENTS (Student)
 router.get("/approved", async (req, res) => {
-  const events = await Event.find({ status: "approved" });
+  const events = await Event.find({ status: "approved" }, "title date venue description capacity createdAt registeredUsers");
   res.json(events);
 });
 
@@ -34,6 +34,32 @@ router.put("/approve/:id", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const event = await Event.findById(req.params.id);
   res.json(event);
+});
+
+// Add a user to registeredUsers array as string
+router.put("/addRegisteredUser/:id", async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: "Missing userId" });
+  }
+
+  try {
+    const event = await Event.findByIdAndUpdate(
+      req.params.id,
+      { $addToSet: { registeredUsers: userId.toString() } },
+      { new: true }
+    );
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.json(event);
+  } catch (err) {
+    console.error("Error in addRegisteredUser:", err);
+    res.status(500).json({ message: "Failed to add user" });
+  }
 });
 
 // REDUCE CAPACITY (Concurrency Safe)
