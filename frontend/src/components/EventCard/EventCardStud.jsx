@@ -33,7 +33,7 @@ const EventCardStud = ({ event, type, userId }) => {
     return;
   }
     try {
-      const response = await axios.post("http://localhost:5000/register/register", {
+      const response = await axios.post("http://localhost:5000/register", {
         userId,
         eventId: event._id,
       });

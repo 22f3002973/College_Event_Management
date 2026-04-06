@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import users from "../../data/users.json";
+import axios from "axios";
 import "./auth.css";
 
 const Login = () => {
@@ -8,27 +8,32 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
 
-    const user = users.find(
-      (u) => u.email === email && u.password === password
-    );
 
-    if (!user) {
-      alert("Invalid credentials");
-      return;
-    }
+const handleLogin = async (e) => {
+  e.preventDefault();
 
+  try {
+    const res = await axios.post("http://localhost:5000/users/login", {
+      email,
+      password,
+    });
+
+    const user = res.data.user;
+
+    // Store user
     localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("userId", user._id);
 
-    if (user.role === "student")
-      navigate("/student/dashboard");
-    else if (user.role === "organizer")
-      navigate("/organizer/dashboard");
-    else
-      navigate("/admin/dashboard");
-  };
+    // Navigate based on role
+    if (user.role === "student") navigate("/student/dashboard");
+    else if (user.role === "organizer") navigate("/organizer/dashboard");
+    else navigate("/admin/dashboard");
+
+  } catch (err) {
+    alert("Invalid credentials");
+  }
+};
 
  return (
   <>

@@ -1,13 +1,19 @@
 const express = require("express");
-const connectDB = require("../../shared/config/db");
+const mongoose = require("mongoose");
+const cors = require("cors");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+mongoose.connect("mongodb://localhost:27017/users")
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
 
 const userRoutes = require("./routes/userRoutes");
 
-const app = express();
-app.use(express.json());
-
-connectDB();
-
-app.use("/users", userRoutes);
+// ✅ FIXED HERE
+app.use("/", userRoutes);
 
 app.listen(5001, () => console.log("User Service running on 5001"));

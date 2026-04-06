@@ -1,19 +1,25 @@
 const express = require("express");
+const cors = require("cors");
 const proxy = require("express-http-proxy");
 
 const app = express();
 
+// ✅ Enable CORS FIRST
+app.use(cors());
+
+// Routes
 app.use("/users", proxy("http://localhost:5001"));
 
 app.use(
   "/events",
   proxy("http://localhost:5002", {
     proxyReqPathResolver: function (req) {
-      return "/events" + req.url;   // ✅ FINAL FIX
+      return "/events" + req.url;
     },
   })
 );
 
 app.use("/register", proxy("http://localhost:5003"));
 
-app.listen(5000, () => console.log("Gateway running"));
+// Start server
+app.listen(5000, () => console.log("Gateway running on 5000"));
