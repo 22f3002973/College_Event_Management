@@ -11,7 +11,8 @@ const eventSchema = new mongoose.Schema({
   type: String,
   prizes: String,
   organizerId: String,
-  status: { type: String, default: "pending" }
+  status: { type: String, default: "pending" },
+   registeredUsers: [String], // array of userIds
 });
 
 module.exports = mongoose.model("Event", eventSchema);

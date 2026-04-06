@@ -1,33 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import EventCardStud from "../../components/EventCard/EventCardStud";
 
 import FeedbackModal from "./FeedbackModal";
 import "./StudentFeedback.css";
+import axios from "axios";
 
-// TEMP mock data (replace with API later)
-const attendedEvents = [
-  {
-    _id: "65e1a101",
-    title: "Tech Fest 2026",
-    description: "Annual technical event",
-    date: "2026-02-10",
-    venue: "Auditorium",
-    createdAt: "2026-02-01T10:30:00",
-  },
-  {
-    _id: "65e1a102",
-    title: "Cultural Night",
-    description: "Dance and music performances",
-    date: "2026-02-15",
-    venue: "Open Ground",
-    createdAt: "2026-02-01T10:30:00",
-  },
-];
 
 const StudentFeedback = () => {
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const userId = localStorage.getItem("userId");
+  
+  const [attendedEvents, setAttendedEvents] = useState([]);
   const [feedbackHistory, setFeedbackHistory] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+ // Fetch registrations and feedback from backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // 1️⃣ Fetch all registrations for this user
+        const regRes = await axios.get(`http://localhost:5003/register/${userId}`);
+        const events = regRes.data.map((reg) => reg.event || { title: "Event not found", date: null });
+      setAttendedEvents(events);
+
+        // 2️⃣ Fetch feedback submitted by this user
+        const feedbackRes = await axios.get(`http://localhost:5003/register/feedback/${userId}`);
+        setFeedbackHistory(feedbackRes.data || []);
+
+      } catch (err) {
+       console.error("Error fetching events or feedback:", err.response?.data || err.message);
+      setAttendedEvents([]);
+      setFeedbackHistory([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userId) fetchData();
+  }, [userId]);
 
   const handleSubmitFeedback = (feedback) => {
     setFeedbackHistory((prev) => [...prev, feedback]);
@@ -35,7 +48,9 @@ const StudentFeedback = () => {
   };
 
   const hasFeedback = (eventId) =>
-    feedbackHistory.some((f) => f.eventId === eventId);
+    feedbackHistory.some((f) => f.event._id === eventId);
+
+  if (loading) return <p>Loading events and feedback...</p>;
 
   return (
     <>
@@ -51,7 +66,7 @@ const StudentFeedback = () => {
           <div className="feedback-grid">
             {attendedEvents.map((event) => (
               <div key={event._id} className="feedback-card-wrapper">
-                <EventCardStud event={event} type="feedback" />
+                 <EventCardStud event={event} type="feedback" userId={userId} />
 
                 {!hasFeedback(event._id) ? (
                   <button
@@ -78,13 +93,13 @@ const StudentFeedback = () => {
             <p className="empty-text">No feedback submitted yet.</p>
           ) : (
             <div className="history-grid">
-              {feedbackHistory.map((fb, index) => (
-                <div key={index} className="history-card">
-                  <h4>{fb.eventTitle}</h4>
+             {feedbackHistory.map((fb) => (
+                <div key={fb._id} className="history-card">
+                  <h4>{fb.event.title}</h4>
                   <p className="rating">⭐ {fb.rating} / 5</p>
                   <p className="comment">{fb.comment}</p>
                   <p className="date">
-                    Submitted on {new Date(fb.date).toLocaleDateString()}
+                    Submitted on {new Date(fb.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               ))}
@@ -98,6 +113,7 @@ const StudentFeedback = () => {
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
           onSubmit={handleSubmitFeedback}
+          userId={userId}
         />
       )}
     </>

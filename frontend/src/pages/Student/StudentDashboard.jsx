@@ -1,45 +1,56 @@
-import React from "react";
+import React,{ useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
+import axios from "axios";
 
-import usersData from "../../data/users.json";
-import eventsData from "../../data/events.json";
-import registrationsData from "../../data/registrations.json";
 
 import "./StudentDashboard.css";
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
 
-  const users = Array.isArray(usersData) ? usersData : [];
-  const events = Array.isArray(eventsData) ? eventsData : [];
-  const registrations = Array.isArray(registrationsData)
-    ? registrationsData
-    : [];
+  const studentId = localStorage.getItem("userId");
+  const [approvedEvents, setApprovedEvents] = useState([]);
+  const [registeredEvents, setRegisteredEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const loggedInStudentId = "64a1f001";
+ useEffect(() => {
+    if (!studentId) return; // safety check
 
-  const student =
-    users.find((u) => u._id === loggedInStudentId) || {
-      name: "Student",
+    const fetchData = async () => {
+      try {
+        // Fetch all approved events
+        const eventsRes = await axios.get("http://localhost:5002/events/approved");
+        const approved = eventsRes.data || [];
+        setApprovedEvents(approved);
+
+        // Fetch student's registered events
+        const regRes = await axios.get(`http://localhost:5000/register/${studentId}`);
+        const registered = regRes.data.map(r => r.event); // extract event object
+        setRegisteredEvents(registered);
+      } catch (err) {
+        console.error("Error fetching events:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
-  const approvedEvents = events.filter(
-    (e) => e.status === "approved"
+    fetchData();
+  }, [studentId]);
+
+  
+
+  // Compute upcoming events student has NOT registered for
+   const registeredEventIds = registeredEvents.map(e => e._id);
+  const upcomingEvents = approvedEvents.filter(
+    (event) => !registeredEventIds.includes(event._id)
   );
 
-  const studentRegistrations = registrations.filter(
-    (r) => r.studentId === loggedInStudentId
-  );
-// collect registered event IDs
-const registeredEventIds = studentRegistrations.map(
-  (r) => r.eventId
-);
+  // Count stats
+  const totalApproved = approvedEvents.length;
+  const totalRegistered = registeredEvents.length;
 
-// approved events NOT registered by the student
-const upcomingEvents = approvedEvents.filter(
-  (event) => !registeredEventIds.includes(event._id)
-);
+  if (loading) return <p>Loading your dashboard...</p>;
 
   return (
     <>
@@ -48,7 +59,7 @@ const upcomingEvents = approvedEvents.filter(
       <div className="student-dashboard">
         {/* Header */}
         <div className="dashboard-header">
-          <h1>Welcome, {student.name}</h1>
+          <h1>Welcome, {studentId.name}</h1>
           <p className="subtitle">
             Here’s what’s happening around you
           </p>
@@ -57,12 +68,12 @@ const upcomingEvents = approvedEvents.filter(
         {/* Stats */}
         <div className="dashboard-stats">
           <div className="stat-card">
-            <h2>{approvedEvents.length}</h2>
+            <h2>{totalApproved}</h2>
             <p>Available Events</p>
           </div>
 
           <div className="stat-card">
-            <h2>{studentRegistrations.length}</h2>
+            <h2>{totalRegistered}</h2>
             <p>Registered Events</p>
           </div>
         </div>
@@ -72,7 +83,7 @@ const upcomingEvents = approvedEvents.filter(
           <div className="reminder-header">
             <h2>Your Registered Events</h2>
 
-            {studentRegistrations.length === 0 && (
+            {totalRegistered === 0 && (
               <button
                 className="secondary-btn"
                 onClick={() => navigate("/student/browse")}
@@ -82,7 +93,7 @@ const upcomingEvents = approvedEvents.filter(
             )}
           </div>
 
-          {studentRegistrations.length === 0 ? (
+          {totalRegistered === 0 ? (
             <p className="motivation-text">
               You haven’t registered for any events yet.  
               Don’t miss out — exciting events are waiting for you!
@@ -94,23 +105,14 @@ const upcomingEvents = approvedEvents.filter(
               </p>
 
               <ul>
-                {studentRegistrations.map((reg, index) => {
-                  const matchedEvent =
-                    events.find(e => e._id === reg.eventId) ||
-                    events.find(e => e.title === reg.eventTitle);
-
-                  return (
-                    <li key={index}>
-                      <strong>
-                        {matchedEvent?.title || reg.eventTitle || "Event"}
-                      </strong>
-                      <span>
-                        {matchedEvent?.date || reg.date} •{" "}
-                        {matchedEvent?.venue || reg.venue}
-                      </span>
-                    </li>
-                  );
-                })}
+                {registeredEvents.slice(0, 3).map((event) => (
+                  <li key={event._id}>
+                    <strong>{event.title}</strong>
+                    <span>
+                      {event.date} • {event.venue || "Venue TBD"}
+                    </span>
+                  </li>
+                ))}
               </ul>
 
               <button
@@ -134,13 +136,13 @@ const upcomingEvents = approvedEvents.filter(
   )}
 
   <ul>
-    {upcomingEvents.slice(0, 3).map((event, index) => (
-      <li key={index} className="event-item">
-        <strong>{event.title}</strong>
-        <span>
-          {event.date} • {event.venue}
-        </span>
-      </li>
+    {upcomingEvents.slice(0, 3).map((event) => (
+      <li key={event._id} className="event-item">
+                  <strong>{event.title}</strong>
+                  <span>
+                    {event.date} • {event.venue || "Venue TBD"}
+                  </span>
+                </li>
     ))}
   </ul>
 

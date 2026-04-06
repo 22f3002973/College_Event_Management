@@ -1,15 +1,31 @@
 import React, { useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import EventCardStud from "../../components/EventCard/EventCardStud";
-import eventsData from "../../data/events.json";
 import "./BrowseEvents.css";
+import axios from "axios";
+import { useEffect } from "react";
+import SearchBar from "../../components/SearchBar/SearchBar";
 
 const BrowseEvents = () => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [sortType, setSortType] = useState("upcoming");
+  const [events, setEvents] = useState([]); 
+  useEffect(() => {
+  const fetchEvents = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/events/approved");
+      setEvents(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchEvents();
+}, []);
 
   const today = new Date();
 
-  const sortedEvents = [...eventsData].sort((a, b) => {
+  const sortedEvents = [...events].sort((a, b) => {
     if (sortType === "upcoming") {
       return new Date(a.date) - new Date(b.date);
     }
@@ -29,12 +45,17 @@ const BrowseEvents = () => {
     return 0;
   });
 
-  const displayedEvents =
-    sortType === "upcoming"
-      ? sortedEvents.filter((e) => new Date(e.date) >= today)
-      : sortType === "past"
-      ? sortedEvents.filter((e) => new Date(e.date) < today)
-      : sortedEvents;
+  const todayDate = new Date().toISOString().split("T")[0];
+
+const displayedEvents =
+  (sortType === "upcoming"
+    ? sortedEvents.filter((e) => e.date >= todayDate)
+    : sortType === "past"
+    ? sortedEvents.filter((e) => new Date(e.date) < today)
+    : sortedEvents
+  ).filter((event) =>
+    event.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <>
@@ -47,6 +68,11 @@ const BrowseEvents = () => {
             <p>Explore and register for college events</p>
           </div>
 
+          <div className="browse-controls">
+              <SearchBar
+                value={searchQuery}
+                onChange={setSearchQuery}
+              />
           <select
             value={sortType}
             onChange={(e) => setSortType(e.target.value)}
@@ -56,12 +82,14 @@ const BrowseEvents = () => {
             <option value="newest">Newest Added</option>
             <option value="oldest">Oldest Added</option>
           </select>
+           </div>
         </div>
 
         <div className="events-grid">
           {displayedEvents.length > 0 ? (
             displayedEvents.map((event) => (
-              <EventCardStud key={event._id} event={event} type="browse"/>
+             <EventCardStud key={event._id} event={event}type="browse" userId={localStorage.getItem("userId")}
+              />
             ))
           ) : (
             <p className="no-events">No events found</p>
