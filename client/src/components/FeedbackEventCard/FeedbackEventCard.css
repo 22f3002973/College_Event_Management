@@ -1,0 +1,38 @@
+.feedback-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.feedback-card:hover {
+  transform: translateY(-3px);
+}
+
+.feedback-event-title {
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.feedback-rating,
+.feedback-count {
+  margin: 6px 0;
+  color: #555;
+}
+
+.view-feedback-btn {
+  margin-top: 12px;
+  padding: 8px 14px;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.view-feedback-btn:hover {
+  background: #43a047;
+}

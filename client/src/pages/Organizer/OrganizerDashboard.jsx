@@ -9,6 +9,10 @@ import { useNavigate } from "react-router-dom";
 const OrganizerDashboard = () => {
 
   const navigate = useNavigate();
+<<<<<<< HEAD
+=======
+  const organizerId = "64a1f002";
+>>>>>>> organizer
 
   // ✅ Must match organizerId in events.json
   const organizerId = "64a1f002";
@@ -25,6 +29,7 @@ const OrganizerDashboard = () => {
     event => event.organizerId === organizerId
   );
 
+<<<<<<< HEAD
   // ✅ Stats
   const approved = organizerEvents.filter(
     e => e.status === "approved"
@@ -37,6 +42,12 @@ const OrganizerDashboard = () => {
   const rejected = organizerEvents.filter(
     e => e.status === "rejected"
   ).length;
+=======
+  const approved = organizerEvents.filter(e => e.status === "approved").length;
+  const pending = organizerEvents.filter(e => e.status === "pending").length;
+  const rejected = organizerEvents.filter(e => e.status === "rejected").length;
+  const upcoming = organizerEvents.filter(e => e.status === "upcoming").length;
+>>>>>>> organizer
 
   return (
     <OrganizerLayout>
@@ -45,7 +56,7 @@ const OrganizerDashboard = () => {
         {/* Header */}
         <div className="dashboard-header">
           <div>
-            <h1>Organizer Dashboard</h1>
+            <h1>Hello Anushka!</h1>
             <p>Manage and track all your events</p>
           </div>
 
@@ -63,6 +74,7 @@ const OrganizerDashboard = () => {
           <StatsCard title="Approved" count={approved} />
           <StatsCard title="Pending" count={pending} />
           <StatsCard title="Rejected" count={rejected} />
+          <StatsCard title="Upcoming" count={upcoming} />
         </div>
 
         {/* Events List */}

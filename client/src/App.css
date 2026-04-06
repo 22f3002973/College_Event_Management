@@ -1,5 +1,14 @@
+/* Remove Vite demo layout */
 #root {
   width: 100%;
+<<<<<<< HEAD
+}
+
+/* Optional: smooth font rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+=======
   min-height: 100vh;
 }
 
@@ -38,4 +47,5 @@
 
 .read-the-docs {
   color: #888;
+>>>>>>> 6416dfb8762884141fdb1747bc5771002b2b1c77
 }

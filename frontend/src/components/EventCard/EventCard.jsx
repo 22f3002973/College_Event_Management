@@ -1,17 +1,21 @@
 import { useNavigate } from "react-router-dom";
 import "./EventCard.css";
 
-const EventCard = ({ event }) => {
+const EventCard = ({ event, onDelete }) => {  // 🔥 updated props
   const navigate = useNavigate();
 
   const handleEdit = () => {
-  console.log("Edit clicked", event);
-  navigate("/organizer/edit-event", { state: { event } });
-};
+    console.log("Edit clicked", event);
+    navigate("/organizer/edit-event", { state: { event } });
+  };
 
-
+  // 🔥 UPDATED DELETE FUNCTION
   const handleDelete = () => {
-    alert("Delete functionality will be added later");
+    const confirmDelete = window.confirm("Are you sure you want to delete this event?");
+    
+    if (confirmDelete) {
+      onDelete(event._id);
+    }
   };
 
   return (

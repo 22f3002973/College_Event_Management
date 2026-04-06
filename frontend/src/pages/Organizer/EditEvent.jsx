@@ -1,35 +1,86 @@
 import OrganizerLayout from "../../components/Layout/OrganizerLayout";
 import "./EditEvent.css";
 import { useLocation } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 const EditEvent = () => {
-
   const location = useLocation();
   const event = location.state?.event;
+
+  // 🔹 State for form fields
+  const [title, setTitle] = useState(event?.title || "");
+  const formatDate = (d) => {
+  if (!d) return "";
+  return d.split("T")[0]; // ensures YYYY-MM-DD
+};
+
+  const [date, setDate] = useState(formatDate(event?.date));
+  const [venue, setVenue] = useState(event?.venue || "");
+  const [description, setDescription] = useState(event?.description || "");
+
+  // 🔹 Success message state
+  const [message, setMessage] = useState("");
+
+  // 🔹 Handle form submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.put(
+        `http://localhost:5000/events/${event._id}`,
+        {
+          title,
+          date,
+          venue,
+          description,
+        }
+      );
+
+      setMessage("✅ Event updated successfully!");
+
+    } catch (error) {
+  console.error("Full error:", error);
+
+  const msg =
+    error.response?.data?.message ||
+    error.message ||
+    "Unknown error";
+
+  setMessage("❌ " + msg);
+}
+  };
 
   return (
     <OrganizerLayout>
       <div className="edit-container">
         <h1>Edit Event</h1>
 
-        <form className="edit-form">
+        {/* 🔹 Show message */}
+        {message && <p className="message">{message}</p>}
+
+        <form className="edit-form" onSubmit={handleSubmit}>
           <input
             type="text"
-            defaultValue={event?.title || ""}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
 
           <input
             type="date"
-            defaultValue={event?.date || ""}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
           />
 
           <input
             type="text"
-            defaultValue={event?.venue || ""}
+            value={venue}
+            onChange={(e) => setVenue(e.target.value)}
           />
 
           <textarea
-            defaultValue={event?.description || ""}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           ></textarea>
 
           <button type="submit">Update Event</button>

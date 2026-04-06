@@ -22,6 +22,10 @@ import CreateEvent from "../pages/Organizer/CreateEvent";
 import EventList from "../pages/Organizer/EventList";
 import EditEvent from "../pages/Organizer/EditEvent";
 
+//  Removed Organizer Feedback imports
+// import FeedbackEvents from "../pages/Organizer/FeedbackEvents";                
+// import EventFeedbackDetails from "../pages/Organizer/EventFeedbackDetails";
+
 
 // Admin
 import AdminDashboard from "../pages/Admin/AdminDashboard";
@@ -35,17 +39,19 @@ const AppRoutes = () => {
       <Route path="/register/student" element={<StudentRegister />} />
       <Route path="/register/organizer" element={<OrganizerRegister />} />
 
-
       <Route path="/student/dashboard" element={<StudentDashboard />} />
       <Route path="/student/browse" element={<BrowseEvents />} />
       <Route path="/student/registered" element={<RegisteredEvents />} />
-      <Route path="/student/feedback" element={<StudentFeedback />} /> 
+      <Route path="/student/feedback" element={<StudentFeedback />} />
 
       <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
       <Route path="/organizer/create-event" element={<CreateEvent />} />
       <Route path="/organizer/events" element={<EventList />} />
       <Route path="/organizer/edit-event" element={<EditEvent />} />
 
+      {/* Removed Organizer Feedback routes */}
+      {/* <Route path="/organizer/feedback" element={<FeedbackEvents />} /> */}
+      {/* <Route path="/organizer/feedback/:eventId" element={<EventFeedbackDetails />} /> */}
 
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/event-approval" element={<EventApproval />} />

@@ -31,6 +31,7 @@ const Navbar = () => {
       { name: "Dashboard", to: "/organizer/dashboard" },
       { name: "Create Event", to: "/organizer/create-event" },
       { name: "My Events", to: "/organizer/events" },
+      // ❌ Feedback removed
     ];
   }
 
@@ -40,8 +41,8 @@ const Navbar = () => {
     links = [
       { name: "Home", to: "/student/dashboard" },
       { name: "Events", to: "/student/browse" },
-      { name: "Registered", to: "/student/registered" },
-      { name: "Feedback", to: "/student/feedback" },
+      { name: "Registered", to: "/student/registered" }
+      // ❌ Feedback removed
     ];
   }
 
@@ -90,7 +91,7 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Drawer */}
+      {/* Profile Drawer */}
       {showProfile && (
         <ProfileDrawer onClose={() => setShowProfile(false)} />
       )}
