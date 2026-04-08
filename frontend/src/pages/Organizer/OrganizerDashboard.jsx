@@ -12,18 +12,18 @@ const OrganizerDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const organizerId = "64a1f002";
+  const user = JSON.parse(localStorage.getItem("user"));
+  const organizerId = user?._id;
 
   const [organizerEvents, setOrganizerEvents] = useState([]);
 
-  // 🔥 DELETE HANDLER (ADDED)
+  // ✅ DELETE HANDLER
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/events/${id}`);
 
-      // remove from UI instantly
       setOrganizerEvents(prev =>
-        prev.filter(event => event._id !== id)
+        (prev || []).filter(event => event._id !== id)
       );
     } catch (error) {
       console.error(error);
@@ -35,25 +35,34 @@ const OrganizerDashboard = () => {
       const res = await axios.get(
         `http://localhost:5000/events/organizer/${organizerId}`
       );
-      setOrganizerEvents(res.data);
+
+      console.log("API RESPONSE:", res.data); // 🔍 DEBUG
+
+      // ✅ FIX HERE
+      setOrganizerEvents(res.data?.events || []);
+
     } catch (error) {
       console.error(error);
+      setOrganizerEvents([]); // ✅ safety
     }
   };
 
   useEffect(() => {
-    fetchEvents();
-  }, [location]);
+    if (organizerId) {
+      fetchEvents();
+    }
+  }, [location, organizerId]);
 
-  const approved = organizerEvents.filter(
+  // ✅ SAFE FILTERING
+  const approved = (organizerEvents || []).filter(
     e => e.status === "approved"
   ).length;
 
-  const pending = organizerEvents.filter(
+  const pending = (organizerEvents || []).filter(
     e => e.status === "pending"
   ).length;
 
-  const rejected = organizerEvents.filter(
+  const rejected = (organizerEvents || []).filter(
     e => e.status === "rejected"
   ).length;
 
@@ -92,7 +101,7 @@ const OrganizerDashboard = () => {
               <EventCard 
                 key={event._id} 
                 event={event}
-                onDelete={handleDelete}   // 🔥 ADDED
+                onDelete={handleDelete}
               />
             ))
           )}

@@ -14,6 +14,6 @@ mongoose.connect("mongodb://localhost:27017/users")
 const userRoutes = require("./routes/userRoutes");
 
 // ✅ FIXED HERE
-app.use("/", userRoutes);
+app.use("/users", userRoutes);
 
 app.listen(5001, () => console.log("User Service running on 5001"));

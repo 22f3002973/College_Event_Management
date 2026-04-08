@@ -23,12 +23,21 @@ const handleLogin = async (e) => {
 
     // Store user
     localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("userId", user._id);
+    
 
     // Navigate based on role
-    if (user.role === "student") navigate("/student/dashboard");
-    else if (user.role === "organizer") navigate("/organizer/dashboard");
-    else navigate("/admin/dashboard");
+    if (user.role === "student") {
+  navigate("/student/dashboard");
+} 
+else if (user.role === "organizer") {
+  navigate("/organizer/dashboard");
+} 
+else if (user.role === "admin") {
+  navigate("/admin/dashboard");
+} 
+else {
+  alert("Unknown role");
+}
 
   } catch (err) {
     alert("Invalid credentials");

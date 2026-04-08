@@ -3,39 +3,47 @@ const router = express.Router();
 const Registration = require("../models/Registration");
 const axios = require("axios");
 
+// ✅ IMPORT PRODUCER
+const sendMessage = require("../rabbitmq/producer");
+
 // REGISTER FOR EVENT
 router.post("/", async (req, res) => {
-  await axios.put(
-  `http://localhost:5002/events/addRegisteredUser/${eventId}`,
-  { userId }
-);
-  const { userId, eventId } = req.body;
+  try {
+    const { userId, eventId } = req.body;
 
-  // Prevent duplicate
-  const existing = await Registration.findOne({ userId, eventId });
-  if (existing) return res.json({ message: "Already registered" });
+    // Prevent duplicate
+    const existing = await Registration.findOne({ userId, eventId });
+    if (existing) {
+      return res.json({ message: "Already registered" });
+    }
 
-  // Get event
-  const eventRes = await axios.get(`http://localhost:5002/events/${eventId}`);
-  const event = eventRes.data;
+    // Optional: Check event exists
+    const eventRes = await axios.get(`http://localhost:5002/events/${eventId}`);
+    const event = eventRes.data;
 
-  if (event.capacity <= 0) {
-    return res.json({ message: "Event Full" });
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // ✅ SAVE REGISTRATION FIRST
+    const reg = await Registration.create({ userId, eventId });
+
+    // ✅ SEND MESSAGE TO RABBITMQ (ASYNC)
+    await sendMessage("event_queue", {
+      eventId,
+      userId
+    });
+
+    res.json({
+      success: true,
+      message: "Registered (processing async)",
+      reg
+    });
+
+  } catch (err) {
+    console.error("Registration error:", err);
+    res.status(500).json({ message: "Server error" });
   }
-
-  // Reduce capacity
-  const reduceRes = await axios.put(
-    `http://localhost:5002/events/reduce/${eventId}`
-  );
-
-  if (reduceRes.data.message === "Full") {
-    return res.json({ message: "Event just got full" });
-  }
-
-  // Save
-  const reg = await Registration.create({ userId, eventId });
-
-  res.json({ success: true, message: "Registered", reg });
 });
 
 // ADMIN VIEW

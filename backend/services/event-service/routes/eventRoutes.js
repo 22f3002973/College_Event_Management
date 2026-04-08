@@ -6,13 +6,19 @@ const redisClient = require("../../../shared/config/redis");
 // CREATE EVENT (Organizer)
 router.post("/create", async (req, res) => {
   try {
-    console.log("Incoming Data:", req.body); // debug
+    const { title, description, organizerId } = req.body;
 
-    const event = await Event.create(req.body);
+    if (!title || !description || !organizerId) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const event = await Event.create({
+      ...req.body,
+      status: "pending"   // force pending
+    });
 
     res.json(event);
   } catch (error) {
-    console.error("Error while creating event:", error.message);
     res.status(500).json({ message: error.message });
   }
 });
@@ -24,9 +30,9 @@ router.get("/organizer/:organizerId", async (req, res) => {
       organizerId: req.params.organizerId
     });
 
-    res.json(events);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json({ success: true, events });
+  } catch (err) {
+    res.status(500).json({ success: false });
   }
 });
 

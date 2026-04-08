@@ -9,6 +9,6 @@ app.use(express.json());
 mongoose.connect("mongodb://localhost:27017/registrations");
 
 const registerRoutes = require("./routes/registerRoutes");
-app.use("/register", registerRoutes);
+app.use("/", registerRoutes);
 
 app.listen(5003, () => console.log("Registration Service running"));

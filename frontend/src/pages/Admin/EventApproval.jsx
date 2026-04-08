@@ -14,7 +14,7 @@ const EventApproval = () => {
 
   const fetchEvents = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/admin/events");
+      const res = await axios.get("http://localhost:5000/events/pending");
       setEvents(res.data);
     } catch (err) {
       console.error("Error fetching events:", err);
@@ -26,7 +26,7 @@ const EventApproval = () => {
   // ✅ APPROVE EVENT
   const handleApprove = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/admin/approve/${id}`);
+      await axios.put(`http://localhost:5000/events/approve/${id}`);;
       fetchEvents(); // refresh after update
     } catch (err) {
       console.error("Approve failed:", err);
@@ -36,7 +36,7 @@ const EventApproval = () => {
   // ✅ REJECT EVENT
   const handleReject = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/admin/reject/${id}`);
+      await axios.put(`http://localhost:5000/events/reject/${id}`);;
       fetchEvents(); // refresh after update
     } catch (err) {
       console.error("Reject failed:", err);

@@ -18,29 +18,30 @@ const CreateEvent = () => {
 
   // 🔥 submit handler
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      await axios.post("http://localhost:5000/events/create", {
-        title,
-        date,
-        venue,
-        description,
-        organizerId: "64a1f002",
-      });
+  try {
+    const user = JSON.parse(localStorage.getItem("user"));
 
-      setMessage("✅ Event created successfully!");  // 🔥 ADDED
+    await axios.post("http://localhost:5000/events/create", {
+      title,
+      date,
+      venue,
+      description,
+      organizerId: user._id
+    });
 
-      // 🔥 redirect after short delay
-      setTimeout(() => {
-        navigate("/organizer/events");
-      }, 1000);
+    setMessage("✅ Event created successfully!");
 
-    } catch (error) {
-      console.error(error);
-      setMessage("❌ Failed to create event");   // 🔥 ADDED
-    }
-  };
+    setTimeout(() => {
+      navigate("/organizer/events");
+    }, 1000);
+
+  } catch (error) {
+    console.error(error);
+    setMessage("❌ Failed to create event");
+  }
+};
 
   return (
     <OrganizerLayout>

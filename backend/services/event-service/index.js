@@ -12,3 +12,5 @@ const eventRoutes = require("./routes/eventRoutes");
 app.use("/events", eventRoutes);
 
 app.listen(5002, () => console.log("Event Service running"));
+const consumeMessages = require("./rabbitmq/consumer");
+consumeMessages();

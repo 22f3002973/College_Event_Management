@@ -6,7 +6,10 @@ const mongoose = require("mongoose");
 // REGISTER
 router.post("/register", async (req, res) => {
   try {
+    req.body.email = req.body.email.toLowerCase().trim(); // ✅ ADD THIS
+
     const user = await User.create(req.body);
+
     res.status(201).json({ success: true, user });
   } catch (err) {
     console.error(err);
@@ -15,12 +18,23 @@ router.post("/register", async (req, res) => {
 });
 
 // LOGIN
+// LOGIN (FIXED)
 router.post("/login", async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email, password: req.body.password });
-    if (!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
+    const email = req.body.email.trim().toLowerCase();
+    const password = req.body.password.trim();
+
+    const user = await User.findOne({ email, password });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
 
     res.json({ success: true, user });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Server error" });
