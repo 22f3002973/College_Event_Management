@@ -15,7 +15,7 @@ const StudentRegister = () => {
 
   const handleRegister = async () => {
     try {
-      await axios.post("http://localhost:5000/users/register", {
+      await axios.post("http://localhost:5001/users/register", {
         ...form,
         role: "student",
       });
