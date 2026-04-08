@@ -9,16 +9,7 @@ app.use(cors());
 
 // Routes
 app.use("/users", proxy("http://localhost:5001"));
-
-app.use(
-  "/events",
-  proxy("http://localhost:5002", {
-    proxyReqPathResolver: function (req) {
-      return "/events" + req.url;
-    },
-  })
-);
-
+app.use("/events", proxy("http://localhost:5002"));
 app.use("/register", proxy("http://localhost:5003"));
 
 // Start server

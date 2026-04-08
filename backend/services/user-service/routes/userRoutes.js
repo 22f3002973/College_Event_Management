@@ -6,14 +6,28 @@ const mongoose = require("mongoose");
 // REGISTER
 router.post("/register", async (req, res) => {
   try {
-    req.body.email = req.body.email.toLowerCase().trim(); // ✅ ADD THIS
+    const email = req.body.email.toLowerCase().trim();
 
-    const user = await User.create(req.body);
+    // ✅ CHECK EXISTING USER
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists"
+      });
+    }
+
+    const user = await User.create({
+      ...req.body,
+      email
+    });
 
     res.status(201).json({ success: true, user });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false });
   }
 });
 
@@ -21,12 +35,16 @@ router.post("/register", async (req, res) => {
 // LOGIN (FIXED)
 router.post("/login", async (req, res) => {
   try {
-    const email = req.body.email.trim().toLowerCase();
-    const password = req.body.password.trim();
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password?.trim();
 
-    const user = await User.findOne({ email, password });
+    console.log("LOGIN INPUT:", email, password); // ✅ DEBUG
 
-    if (!user) {
+    const user = await User.findOne({ email });
+
+    console.log("FOUND USER:", user); // ✅ DEBUG
+
+    if (!user || user.password !== password) {
       return res.status(401).json({
         success: false,
         message: "Invalid credentials"
