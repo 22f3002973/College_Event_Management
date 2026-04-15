@@ -3,7 +3,8 @@ const router = express.Router();
 const Event = require("../models/Event");
 const mongoose = require("mongoose");
 const redisClient = require("../../../shared/config/redis");
-// CREATE EVENT (Organizer)
+
+// ================= CREATE EVENT =================
 router.post("/create", async (req, res) => {
   try {
     const { title, description, organizerId } = req.body;
@@ -14,7 +15,7 @@ router.post("/create", async (req, res) => {
 
     const event = await Event.create({
       ...req.body,
-      status: "pending"   // force pending
+      status: "pending",
     });
 
     res.json(event);
@@ -23,20 +24,39 @@ router.post("/create", async (req, res) => {
   }
 });
 
-// GET events by organizer
+// ================= GET ALL EVENTS (✅ ADDED FOR ADMIN) =================
+router.get("/", async (req, res) => {
+  const events = await Event.find();
+
+  const updated = events.map(e => ({
+    ...e._doc,
+    registeredCount: e.registeredUsers.length,
+    availableSeats: e.capacity - e.registeredUsers.length
+  }));
+
+  res.json(updated);
+});
+// ================= GET EVENTS BY ORGANIZER =================
 router.get("/organizer/:organizerId", async (req, res) => {
   try {
     const events = await Event.find({
-      organizerId: req.params.organizerId
+      organizerId: req.params.organizerId,
     });
 
-    res.json({ success: true, events });
+    const updated = events.map(e => ({
+      ...e._doc,
+      registeredCount: e.registeredUsers.length,
+      availableSeats: e.capacity - e.registeredUsers.length
+    }));
+
+    res.json({ success: true, events: updated });
+
   } catch (err) {
     res.status(500).json({ success: false });
   }
 });
 
-// UPDATE EVENT (Organizer)
+// ================= UPDATE EVENT =================
 router.put("/:id", async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
@@ -45,9 +65,10 @@ router.put("/:id", async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    // Prevent editing if already approved
     if (event.status === "approved") {
-      return res.status(400).json({ message: "Approved event cannot be edited" });
+      return res.status(400).json({
+        message: "Approved event cannot be edited",
+      });
     }
 
     const updatedEvent = await Event.findByIdAndUpdate(
@@ -62,7 +83,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// DELETE EVENT (Organizer)
+// ================= DELETE EVENT =================
 router.delete("/:id", async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
@@ -71,21 +92,69 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    // Optional rule (recommended like update)
     if (event.status === "approved") {
-      return res.status(400).json({ message: "Approved event cannot be deleted" });
+      return res.status(400).json({
+        message: "Approved event cannot be deleted",
+      });
     }
 
     await Event.findByIdAndDelete(req.params.id);
 
     res.json({ message: "Event deleted successfully" });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-//REJECT THE EVENT BY ADMIN
+// ================= PENDING EVENTS =================
+router.get("/pending", async (req, res) => {
+  const events = await Event.find({ status: "pending" });
+  res.json(events);
+});
+
+// ================= APPROVED EVENTS =================
+router.get("/approved", async (req, res) => {
+  try {
+    const cachedData = await redisClient.get("approved_events");
+
+    if (cachedData) {
+      console.log("Serving from Redis Cache ");
+      return res.json(JSON.parse(cachedData));
+    }
+
+    const events = await Event.find({ status: "approved" });
+
+    await redisClient.setEx(
+      "approved_events",
+      60,
+      JSON.stringify(events)
+    );
+
+    console.log("Serving from DB & caching result ");
+    res.json(events);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ================= APPROVE EVENT =================
+router.put("/approve/:id", async (req, res) => {
+  try {
+    const event = await Event.findByIdAndUpdate(
+      req.params.id,
+      { status: "approved" },
+      { new: true }
+    );
+
+    await redisClient.del("approved_events");
+
+    res.json(event);
+  } catch (err) {
+    res.status(500).json({ message: "Error approving event" });
+  }
+});
+
+// ================= REJECT EVENT =================
 router.put("/reject/:id", async (req, res) => {
   try {
     const event = await Event.findByIdAndUpdate(
@@ -100,65 +169,7 @@ router.put("/reject/:id", async (req, res) => {
   }
 });
 
-// APPROVED EVENTS (Student)
-
-router.get("/approved", async (req, res) => {
-  try {
-    // ✅ STEP 1: Check cache
-    const cachedData = await redisClient.get("approved_events");
-
-    if (cachedData) {
-      console.log("Serving from Redis Cache ⚡");
-      return res.json(JSON.parse(cachedData));
-    }
-
-    // ✅ STEP 2: Fetch from DB
-    const events = await Event.find(
-      { status: "approved" },
-      "title date venue description capacity createdAt registeredUsers"
-    );
-
-    // ✅ STEP 3: Store in Redis (with expiry)
-    await redisClient.setEx(
-      "approved_events",
-      60, // seconds
-      JSON.stringify(events)
-    );
-
-    console.log("Serving from DB & caching result 🗄️");
-
-    res.json(events);
-  } catch (err) {
-    console.error("Error fetching approved events:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-// PENDING EVENTS (Admin)
-router.get("/pending", async (req, res) => {
-  const events = await Event.find({ status: "pending" });
-  res.json(events);
-});
-
-// APPROVE EVENT (Admin)
-router.put("/approve/:id", async (req, res) => {
-  try {
-    const event = await Event.findByIdAndUpdate(
-      req.params.id,
-      { status: "approved" },
-      { new: true }
-    );
-
-    //  Invalidate cache
-    await redisClient.del("approved_events");
-
-    res.json(event);
-  } catch (err) {
-    res.status(500).json({ message: "Error approving event" });
-  }
-});
-
-// GET SINGLE EVENT
+// ================= GET SINGLE EVENT =================
 router.get("/:id", async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -170,12 +181,11 @@ router.get("/:id", async (req, res) => {
 
     res.json(event);
   } catch (err) {
-    console.error("Error fetching event:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-// Add a user to registeredUsers array as string
+// ================= REGISTER USER =================
 router.put("/addRegisteredUser/:id", async (req, res) => {
   const { userId } = req.body;
 
@@ -184,19 +194,24 @@ router.put("/addRegisteredUser/:id", async (req, res) => {
   }
 
   try {
-    const event = await Event.findByIdAndUpdate(
-      req.params.id,
-      { $addToSet: { registeredUsers: userId.toString() } },
+    const event = await Event.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        registeredUsers: { $ne: userId.toString() } // prevent duplicate
+      },
+      {
+        $addToSet: { registeredUsers: userId.toString() }
+      },
       { new: true }
     );
 
     if (!event) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(400).json({ message: "User already registered or event not found" });
     }
 
     res.json(event);
+
   } catch (err) {
-    console.error("Error in addRegisteredUser:", err);
     res.status(500).json({ message: "Failed to add user" });
   }
 });
@@ -210,6 +225,8 @@ router.put("/reduce/:id", async (req, res) => {
   );
 
   if (!event) return res.json({ message: "Full" });
+
+  await redisClient.del("approved_events");
 
   res.json(event);
 });
@@ -226,6 +243,7 @@ router.put("/increase/:id", async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
+    await redisClient.del("approved_events");
 
     res.json(event);
   } catch (err) {

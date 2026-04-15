@@ -1,35 +1,41 @@
-import React,{ useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import axios from "axios";
-
-
 import "./StudentDashboard.css";
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
 
-  const studentId = localStorage.getItem("userId");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const studentId = user?._id;
+
   const [approvedEvents, setApprovedEvents] = useState([]);
   const [registeredEvents, setRegisteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-    if (!studentId) return; // safety check
+  useEffect(() => {
+    if (!studentId) return;
 
     const fetchData = async () => {
       try {
-        // Fetch all approved events
-        const eventsRes = await axios.get("http://localhost:5002/events/approved");
-        const approved = eventsRes.data || [];
-        setApprovedEvents(approved);
+        const eventsRes = await axios.get(
+          "http://localhost:5000/events/approved"
+        );
+        setApprovedEvents(eventsRes.data || []);
 
-        // Fetch student's registered events
-        const regRes = await axios.get(`http://localhost:5000/register/${studentId}`);
-        const registered = regRes.data.map(r => r.event); // extract event object
+        const regRes = await axios.get(
+          `http://localhost:5000/register/${studentId}`
+        );
+
+        const registered = regRes.data
+          .map((r) => r.event)
+          .filter(Boolean);
+
         setRegisteredEvents(registered);
+
       } catch (err) {
-        console.error("Error fetching events:", err);
+        console.error("Dashboard error:", err);
       } finally {
         setLoading(false);
       }
@@ -38,21 +44,18 @@ const StudentDashboard = () => {
     fetchData();
   }, [studentId]);
 
-  
+  const registeredIds = registeredEvents.map((e) => e._id);
 
-  // Compute upcoming events student has NOT registered for
-   const registeredEventIds = registeredEvents.map(e => e._id);
   const upcomingEvents = approvedEvents.filter(
-    (event) => !registeredEventIds.includes(event._id)
+    (e) => !registeredIds.includes(e._id)
   );
 
-  // Count stats
+  if (!user) return <p>Please login again</p>;
+  if (loading) return <p>Loading your dashboard...</p>;
   const totalApproved = approvedEvents.length;
   const totalRegistered = registeredEvents.length;
 
-  if (loading) return <p>Loading your dashboard...</p>;
-
-  return (
+ return (
     <>
       <Navbar />
 

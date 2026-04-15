@@ -8,7 +8,8 @@ import axios from "axios";
 
 
 const StudentFeedback = () => {
-  const userId = localStorage.getItem("userId");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?._id;
   
   const [attendedEvents, setAttendedEvents] = useState([]);
   const [feedbackHistory, setFeedbackHistory] = useState([]);
@@ -22,12 +23,12 @@ const StudentFeedback = () => {
         setLoading(true);
 
         // 1️⃣ Fetch all registrations for this user
-        const regRes = await axios.get(`http://localhost:5003/register/${userId}`);
+        const regRes = await axios.get(`http://localhost:5000/register/${userId}`);
         const events = regRes.data.map((reg) => reg.event || { title: "Event not found", date: null });
       setAttendedEvents(events);
 
         // 2️⃣ Fetch feedback submitted by this user
-        const feedbackRes = await axios.get(`http://localhost:5003/register/feedback/${userId}`);
+        const feedbackRes = await axios.get(`http://localhost:5000/register/feedback/${userId}`);
         setFeedbackHistory(feedbackRes.data || []);
 
       } catch (err) {
@@ -48,7 +49,7 @@ const StudentFeedback = () => {
   };
 
   const hasFeedback = (eventId) =>
-    feedbackHistory.some((f) => f.event._id === eventId);
+    feedbackHistory.some((f) => f.event?._id === eventId);
 
   if (loading) return <p>Loading events and feedback...</p>;
 

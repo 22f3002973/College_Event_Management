@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
-const Event = require("./models/Event");
-const Registration = require("./models/Registration");
-const Feedback = require("./models/Feedback");
-
+const Event = require("./services/event-service/models/Event");
+const Registration = require("./services/registration-service/models/Registration");
+const Feedback = require("./services/registration-service/models/Feedback");
 mongoose.connect("mongodb://127.0.0.1:27017/eventify");
 
 async function seed() {

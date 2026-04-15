@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 
 import StatsCard from "../../components/StatsCard/StatsCard";
 import EventCard from "../../components/EventCard/EventCard";
@@ -10,50 +10,58 @@ import "./OrganizerDashboard.css";
 const OrganizerDashboard = () => {
 
   const navigate = useNavigate();
-  const location = useLocation();
+ 
 
+  // ✅ get user properly
   const user = JSON.parse(localStorage.getItem("user"));
   const organizerId = user?._id;
 
   const [organizerEvents, setOrganizerEvents] = useState([]);
 
-  // ✅ DELETE HANDLER
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/events/${id}`);
-
-      setOrganizerEvents(prev =>
-        (prev || []).filter(event => event._id !== id)
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+  
+  // ✅ FETCH EVENTS
+  useEffect(() => {
   const fetchEvents = async () => {
     try {
       const res = await axios.get(
         `http://localhost:5000/events/organizer/${organizerId}`
       );
 
-      console.log("API RESPONSE:", res.data); // 🔍 DEBUG
+      console.log("API RESPONSE:", res.data);
 
-      // ✅ FIX HERE
-      setOrganizerEvents(res.data?.events || []);
-
+      const eventsData = res.data.events || res.data;
+      setOrganizerEvents(eventsData);
     } catch (error) {
       console.error(error);
-      setOrganizerEvents([]); // ✅ safety
+      setOrganizerEvents([]);
     }
   };
 
-  useEffect(() => {
-    if (organizerId) {
-      fetchEvents();
-    }
-  }, [location, organizerId]);
+  if (organizerId) {
+    fetchEvents();
+  }
+}, [organizerId]); // ✅ only depends on organizerId
 
-  // ✅ SAFE FILTERING
+  // ✅ DELETE HANDLER
+ const handleDelete = async (id) => {
+  try {
+    await axios.delete(`http://localhost:5000/events/${id}`);
+
+    setOrganizerEvents(prev =>
+      prev.filter(event => event._id !== id)
+    );
+
+    alert("Event deleted successfully");
+
+  } catch (error) {
+    console.error(error);
+
+    alert(error.response?.data?.message || "Delete failed");
+  }
+};
+
+
+  // ✅ STATS
   const approved = (organizerEvents || []).filter(
     e => e.status === "approved"
   ).length;
@@ -98,8 +106,8 @@ const OrganizerDashboard = () => {
             <p>No events created yet.</p>
           ) : (
             organizerEvents.map(event => (
-              <EventCard 
-                key={event._id} 
+              <EventCard
+                key={event._id}
                 event={event}
                 onDelete={handleDelete}
               />

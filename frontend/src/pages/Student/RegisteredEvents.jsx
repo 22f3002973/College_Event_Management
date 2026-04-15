@@ -5,19 +5,27 @@ import "./RegisteredEvents.css";
 import { useState, useEffect } from "react";
 
 const RegisteredEvents = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const studentId = user?._id;
+
   const [registeredEvents, setRegisteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Get logged-in student ID from localStorage
-  const studentId = localStorage.getItem("userId");
   const today = new Date();
+
   useEffect(() => {
+    if (!studentId) return;
+
     const fetchRegisteredEvents = async () => {
       try {
-        // Call Registration API
-        const res = await axios.get(`http://localhost:5000/register/${studentId}`);
-        // res.data is an array of { _id, userId, event }
-        const events = res.data.map((r) => r.event);
+        const res = await axios.get(
+          `http://localhost:5000/register/${studentId}`
+        );
+
+        const events = res.data
+          .map((r) => r.event)
+          .filter(Boolean); // ✅ prevent null
+
         setRegisteredEvents(events);
       } catch (err) {
         console.error("Failed to fetch registered events:", err);
@@ -26,12 +34,9 @@ const RegisteredEvents = () => {
       }
     };
 
-    if (studentId) fetchRegisteredEvents();
+    fetchRegisteredEvents();
   }, [studentId]);
 
-  
-
-  // split upcoming vs past
   const upcomingEvents = registeredEvents.filter(
     (e) => new Date(e.date) >= today
   );
@@ -40,30 +45,27 @@ const RegisteredEvents = () => {
     (e) => new Date(e.date) < today
   );
 
+  if (!studentId) return <p>Please login again</p>;
   if (loading) return <p>Loading your events...</p>;
-  
+
   return (
     <>
       <Navbar />
 
       <div className="registered-events-page">
-        {/* Page header */}
         <div className="registered-header">
           <h1>Your Registered Events</h1>
-          <p>
-            Stay on track with upcoming events and revisit the ones you’ve
-            already participated in
-          </p>
+          <p>Track your upcoming and past events</p>
         </div>
 
-        {/* UPCOMING EVENTS */}
+        {/* UPCOMING */}
         <section className="registered-section">
           <h2>Upcoming Events</h2>
 
           {upcomingEvents.length > 0 ? (
             <div className="upcoming-list">
               {upcomingEvents.map((event) => (
-               <EventCardStud
+                <EventCardStud
                   key={event._id}
                   event={event}
                   type="registered"
@@ -72,13 +74,11 @@ const RegisteredEvents = () => {
               ))}
             </div>
           ) : (
-            <p className="empty-text">
-              You don’t have any upcoming registered events.
-            </p>
+            <p className="empty-text">No upcoming events.</p>
           )}
         </section>
 
-        {/* PAST EVENTS */}
+        {/* PAST */}
         <section className="registered-section">
           <h2>Event History</h2>
 
@@ -94,9 +94,7 @@ const RegisteredEvents = () => {
               ))}
             </div>
           ) : (
-            <p className="empty-text">
-              You haven’t attended any events yet.
-            </p>
+            <p className="empty-text">No past events.</p>
           )}
         </section>
       </div>

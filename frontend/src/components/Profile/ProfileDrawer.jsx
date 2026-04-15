@@ -9,22 +9,33 @@ const ProfileDrawer = ({ onClose }) => {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({ name: "", department: "" });
-  const userId = localStorage.getItem("userId");
-  
- // Fetch user profile
+
+  // ✅ FIXED USER
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user?._id;
+
   useEffect(() => {
     const fetchProfile = async () => {
       if (!userId) return;
 
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:5001/users/${userId}`);
-        if (res.data.success) {
-          setProfile(res.data.user);
-          setForm({ name: res.data.user.name, department: res.data.user.department });
-        }
+
+        // ✅ FIXED API (use gateway)
+        const res = await axios.get(
+          `http://localhost:5000/users/${userId}`
+        );
+
+        const userData = res.data.user || res.data;
+
+        setProfile(userData);
+        setForm({
+          name: userData.name,
+          department: userData.department,
+        });
+
       } catch (err) {
-        console.error("Error fetching profile:", err.response?.data || err.message);
+        console.error("Profile error:", err);
       } finally {
         setLoading(false);
       }
@@ -33,25 +44,41 @@ const ProfileDrawer = ({ onClose }) => {
     fetchProfile();
   }, [userId]);
 
-  // Handle input changes
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Save profile updates
   const handleSave = async () => {
-    try {
-      const res = await axios.put(`http://localhost:5001/users/${userId}`, form);
-      if (res.data.success) {
-        setProfile(res.data.user);
-        setEditMode(false);
-      }
-    } catch (err) {
-      console.error("Error updating profile:", err.response?.data || err.message);
+  try {
+    if (!form.name || !form.department) {
+      alert("All fields are required");
+      return;
     }
-  };
 
+    const res = await axios.put(
+      `http://localhost:5000/users/${userId}`,
+      form
+    );
+
+    const updatedUser = res.data.user || res.data;
+
+    setProfile(updatedUser);
+    setEditMode(false);
+
+    // ✅ update localStorage
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+
+    alert("✅ Profile updated successfully");
+
+  } catch (err) {
+    console.error("Update error:", err);
+    alert("❌ Failed to update profile");
+  }
+};
+
+  if (!userId) return <p>Please login again</p>;
   if (loading) return <p className="drawer-loading">Loading profile...</p>;
+
   return (
     <>
       <div className="drawer-overlay" onClick={onClose} />
@@ -63,17 +90,16 @@ const ProfileDrawer = ({ onClose }) => {
         </div>
 
         <div className="drawer-content">
-           <div className="profile-row">
+          <div className="profile-row">
             <span>Name</span>
             {editMode ? (
               <input
-                type="text"
                 name="name"
-                value={form.name}
+                value={form.name || ""}
                 onChange={handleChange}
               />
             ) : (
-             <p>{profile?.name || "N/A"}</p>
+              <p>{profile?.name}</p>
             )}
           </div>
 
@@ -82,15 +108,12 @@ const ProfileDrawer = ({ onClose }) => {
             <p>{profile?.email}</p>
           </div>
 
-          
-
           <div className="profile-row">
             <span>Department</span>
-           {editMode ? (
+            {editMode ? (
               <input
-                type="text"
                 name="department"
-                value={form.department}
+                value={form.department || ""}
                 onChange={handleChange}
               />
             ) : (
@@ -98,21 +121,23 @@ const ProfileDrawer = ({ onClose }) => {
             )}
           </div>
 
-           {editMode ? (
+          {editMode ? (
             <div className="drawer-btn-group">
-              <button className="drawer-btn" onClick={handleSave}>Save</button>
-              <button className="drawer-btn cancel" onClick={() => setEditMode(false)}>Cancel</button>
+              <button onClick={handleSave}>Save</button>
+              <button onClick={() => setEditMode(false)}>Cancel</button>
             </div>
           ) : (
             <>
-              <button className="drawer-btn" onClick={() => setEditMode(true)}>Edit Profile</button>
-              <button className="drawer-btn" onClick={() => setShowPassword(true)}>Change Password</button>
+              <button onClick={() => setEditMode(true)}>Edit</button>
+              <button onClick={() => setShowPassword(true)}>Change Password</button>
             </>
           )}
         </div>
       </div>
 
-      {showPassword && <ChangePasswordDrawer onClose={() => setShowPassword(false)} />}
+      {showPassword && (
+        <ChangePasswordDrawer onClose={() => setShowPassword(false)} />
+      )}
     </>
   );
 };

@@ -11,13 +11,13 @@ const EditEvent = () => {
   // 🔹 State for form fields
   const [title, setTitle] = useState(event?.title || "");
   const formatDate = (d) => {
-  if (!d) return "";
-  return d.split("T")[0]; // ensures YYYY-MM-DD
-};
-
+    if (!d) return "";
+    return d.split("T")[0]; // ensures YYYY-MM-DD
+  };
   const [date, setDate] = useState(formatDate(event?.date));
   const [venue, setVenue] = useState(event?.venue || "");
   const [description, setDescription] = useState(event?.description || "");
+  const [capacity, setCapacity] = useState(event?.capacity || 0); // 🔹 Added capacity
 
   // 🔹 Success message state
   const [message, setMessage] = useState("");
@@ -34,21 +34,21 @@ const EditEvent = () => {
           date,
           venue,
           description,
+          capacity, // 🔹 send capacity to backend
         }
       );
 
       setMessage("✅ Event updated successfully!");
-
     } catch (error) {
-  console.error("Full error:", error);
+      console.error("Full error:", error);
 
-  const msg =
-    error.response?.data?.message ||
-    error.message ||
-    "Unknown error";
+      const msg =
+        error.response?.data?.message ||
+        error.message ||
+        "Unknown error";
 
-  setMessage("❌ " + msg);
-}
+      setMessage("❌ " + msg);
+    }
   };
 
   return (
@@ -64,6 +64,7 @@ const EditEvent = () => {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            placeholder="Event Title"
           />
 
           <input
@@ -76,12 +77,22 @@ const EditEvent = () => {
             type="text"
             value={venue}
             onChange={(e) => setVenue(e.target.value)}
+            placeholder="Venue"
           />
 
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            placeholder="Description"
           ></textarea>
+
+          <input
+            type="number"
+            value={capacity}
+            onChange={(e) => setCapacity(parseInt(e.target.value))}
+            placeholder="Capacity"
+            min={0}
+          />
 
           <button type="submit">Update Event</button>
         </form>

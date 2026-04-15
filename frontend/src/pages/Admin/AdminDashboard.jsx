@@ -7,29 +7,38 @@ function AdminDashboard() {
   const [events, setEvents] = useState([]);
   const [registrations, setRegistrations] = useState([]);
   const [feedback, setFeedback] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchData();
   }, []);
 
-const fetchData = async () => {
-  try {
-    const [eventsRes, regRes, feedbackRes] = await Promise.all([
-      axios.get("http://localhost:5000/admin/events"),
-      axios.get("http://localhost:5000/register"),
-      axios.get("http://localhost:5000/feedback"),
-    ]);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
 
-    setEvents(eventsRes.data);
-    setRegistrations(regRes.data);
-    setFeedback(feedbackRes.data);
+      // ✅ FIXED API CALLS
+      const [eventsRes, regRes, feedbackRes] = await Promise.all([
+        axios.get("http://localhost:5000/events"), // FIXED
+        axios.get("http://localhost:5000/register"),
+        axios.get("http://localhost:5000/register/feedback/all"), // FIXED
+      ]);
 
-  } catch (err) {
-    console.error(err);
-  }
-};
+      setEvents(eventsRes.data || []);
+      setRegistrations(regRes.data || []);
+      setFeedback(feedbackRes.data || []);
 
-  // Calculations
+    } catch (err) {
+      console.error("Admin Dashboard Error:", err.response?.data || err.message);
+      setEvents([]);
+      setRegistrations([]);
+      setFeedback([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔢 Calculations
   const totalEvents = events.length;
 
   const pendingApprovals = events.filter(
@@ -40,6 +49,8 @@ const fetchData = async () => {
   const totalFeedback = feedback.length;
 
   const recentEvents = events.slice(0, 3);
+
+  if (loading) return <p>Loading dashboard...</p>;
 
   return (
     <>
@@ -79,15 +90,19 @@ const fetchData = async () => {
           <h2>Recent Events</h2>
 
           <div className="recent-events">
-            {recentEvents.map((event) => (
-              <div key={event._id} className="event-item">
-                <h4>{event.title}</h4>
+            {recentEvents.length === 0 ? (
+              <p>No events found</p>
+            ) : (
+              recentEvents.map((event) => (
+                <div key={event._id} className="event-item">
+                  <h4>{event.title}</h4>
 
-                <span className={`badge ${event.status}`}>
-                  {event.status.toUpperCase()}
-                </span>
-              </div>
-            ))}
+                  <span className={`badge ${event.status}`}>
+                    {event.status?.toUpperCase()}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

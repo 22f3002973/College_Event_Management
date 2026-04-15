@@ -2,9 +2,9 @@ import "./EventCardStud.css";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const EventCardStud = ({ event, type, userId }) => {
+const EventCardStud = ({ event, type, userId, isRegistered: propRegistered  }) => {
   const [showConfirm, setShowConfirm] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(propRegistered || false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [currentCapacity, setCurrentCapacity] = useState(event.capacity || 0);
@@ -13,15 +13,13 @@ const EventCardStud = ({ event, type, userId }) => {
 
   // On load, check if user already registered (for registered events page)
  useEffect(() => {
-  // Ensure all IDs are strings for comparison
-  const registeredUsers = (event.registeredUsers || []).map(String);
-  if (registeredUsers.includes(userId?.toString())) {
-    setIsRegistered(true);
+  if (propRegistered !== undefined) {
+    setIsRegistered(propRegistered);
   }
 
   // Set capacity from backend
   if (event.capacity !== undefined) setCurrentCapacity(event.capacity);
-}, [event, userId]);
+}, [event, propRegistered]);
 
   // Function to handle registration API call
   const handleConfirmRegistration = async () => {
@@ -33,7 +31,7 @@ const EventCardStud = ({ event, type, userId }) => {
     return;
   }
     try {
-      const response = await axios.post("http://localhost:5000/register", {
+      const response = await axios.post("http://localhost:5003/register", {
         userId,
         eventId: event._id,
       });
@@ -81,7 +79,14 @@ const EventCardStud = ({ event, type, userId }) => {
           {type === "browse" && !isRegistered && (
            <button
     className="primary-btn"
+    //disabled={currentCapacity <= 0}
     onClick={() => {
+       if (currentCapacity <= 0) {
+        setToastMessage("❌ Event is full!");
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2500);
+        return;
+      }
       if (!userId) {
         setToastMessage("⚠️ You must be logged in to register!");
         setShowToast(true);
@@ -91,7 +96,7 @@ const EventCardStud = ({ event, type, userId }) => {
       setShowConfirm(true);
     }}
   >
-    Register
+    {currentCapacity <= 0 ? "Full" : "Register"}
   </button>
           )}
 

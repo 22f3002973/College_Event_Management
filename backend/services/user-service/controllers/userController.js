@@ -5,7 +5,7 @@ exports.registerUser = async (req, res) => {
 
   // Save to DB (assume done)
 
-  // 🔥 Send event
+  
   sendMessage({
     type: "USER_REGISTERED",
     data: user,

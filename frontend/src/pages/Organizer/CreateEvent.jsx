@@ -13,6 +13,7 @@ const CreateEvent = () => {
   const [date, setDate] = useState("");
   const [venue, setVenue] = useState("");
   const [description, setDescription] = useState("");
+  const [capacity, setCapacity] = useState("");
 
   const [message, setMessage] = useState("");   // 🔥 ADDED
 
@@ -28,6 +29,7 @@ const CreateEvent = () => {
       date,
       venue,
       description,
+      capacity, 
       organizerId: user._id
     });
 
@@ -77,6 +79,13 @@ const CreateEvent = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           ></textarea>
+
+          <input 
+          type="number" 
+          placeholder="Capacity"
+          value={capacity}
+          onChange={(e) => setCapacity(e.target.value)}
+          />
 
           <button type="submit">Create Event</button>
         </form>
